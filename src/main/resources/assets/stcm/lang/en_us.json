@@ -1,0 +1,5 @@
+{
+  "itemGroup.stcm": "StaTech Companion Mod",
+  "item.stcm.space_shield": "Personal Shield Generator",
+  "event.player.stcm.space_suit_warning": "You should really have a Personal Shield Generator when in space..."
+}

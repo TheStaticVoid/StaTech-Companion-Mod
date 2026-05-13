@@ -1,0 +1,13 @@
+{
+  "type": "stcm:space",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "stcm:space",
+      "lakes": false,
+      "features": false,
+      "layers": [],
+      "structure_overrides": []
+    }
+  }
+}
