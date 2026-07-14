@@ -20,6 +20,8 @@ repositories {
             includeGroup "aztech"
             // Tesseract
             includeGroup "net.swedz"
+            // GuideMe
+            includeGroup "appeng.guideme"
         }
     }
 }
@@ -111,6 +113,7 @@ dependencies {
     implementation "aztech:Modern-Industrialization:${modern_industrialization_version}"
     implementation "dev.technici4n:GrandPower:${grandpower_version}"
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
+    implementation("org.appliedenergistics:guideme:${guideme_version}")
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -147,9 +150,11 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              mod_version            : mod_version,
                              mod_authors            : mod_authors,
                              mod_description        : mod_description,
+                             mod_github_link        : mod_github_link,
                              modern_industrialization_version : modern_industrialization_version,
                              grandpower_version : grandpower_version,
-                             tesseract_version : tesseract_version]
+                             tesseract_version : tesseract_version,
+                             guideme_version : guideme_version]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"
