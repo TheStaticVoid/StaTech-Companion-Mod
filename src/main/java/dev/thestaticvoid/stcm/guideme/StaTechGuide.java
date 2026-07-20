@@ -12,7 +12,7 @@ public class StaTechGuide {
 
     public static void init() {
         guide = Guide.builder(ID)
-                .folder("guide")
+                .folder("guides/stcm/guide")
                 .extension(SceneElementTagCompiler.EXTENSION_POINT, new MultiblockShapeCompiler())
                 .build();
     }
