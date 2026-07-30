@@ -4,6 +4,7 @@
   "package": "dev.thestaticvoid.stcm.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "LootrExperience"
   ],
   "client": [
   ],
