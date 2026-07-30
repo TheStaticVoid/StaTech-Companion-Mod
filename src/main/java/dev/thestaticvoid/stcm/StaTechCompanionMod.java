@@ -52,6 +52,9 @@ public class StaTechCompanionMod {
         SpaceItems.init();
         StaTechGuide.init();
 
+        modContainer.registerConfig(ModConfig.Type.COMMON, StaTechCompanionConfig.CONFIG_SPEC
+        );
+
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
