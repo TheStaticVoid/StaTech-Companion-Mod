@@ -43,3 +43,10 @@ type = "required"
 versionRange = "${guideme_version_range}"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "lootr"
+type = "required"
+versionRange = "${lootr_version_range}"
+ordering = "AFTER"
+side = "BOTH"
