@@ -24,6 +24,12 @@ repositories {
             includeGroup "appeng.guideme"
         }
     }
+    maven {
+        url = 'https://maven.blamejared.com'
+        content {
+            includeGroup 'noobanidus.mods.lootr'
+        }
+    }
 }
 
 base {
@@ -114,6 +120,7 @@ dependencies {
     implementation "dev.technici4n:GrandPower:${grandpower_version}"
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
     implementation("org.appliedenergistics:guideme:${guideme_version}")
+    implementation "noobanidus.mods.lootr:lootr-neoforge:${lootr_version}"
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -156,7 +163,9 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              grandpower_version : grandpower_version,
                              tesseract_version : tesseract_version,
                              guideme_version : guideme_version,
-                             guideme_version_range : guideme_version_range]
+                             guideme_version_range : guideme_version_range,
+                             lootr_version : lootr_version,
+                             lootr_version_range : lootr_version_range]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"
