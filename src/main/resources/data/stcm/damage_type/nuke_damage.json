@@ -1,5 +1,5 @@
 {
-  "message_id": "death.stcm.nuke",
+  "message_id": "stcm.nuke",
   "scaling": "always",
   "exhaustion": 0.1,
   "effects": "hurt",
