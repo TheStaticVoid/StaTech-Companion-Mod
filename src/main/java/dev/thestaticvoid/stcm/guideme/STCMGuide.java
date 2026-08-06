@@ -1,13 +1,13 @@
 package dev.thestaticvoid.stcm.guideme;
 
 import aztech.modern_industrialization.guidebook.MultiblockShapeCompiler;
-import dev.thestaticvoid.stcm.StaTechCompanionMod;
+import dev.thestaticvoid.stcm.STCM;
 import guideme.Guide;
 import guideme.scene.element.SceneElementTagCompiler;
 import net.minecraft.resources.ResourceLocation;
 
-public class StaTechGuide {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(StaTechCompanionMod.MODID, "guide");
+public class STCMGuide {
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(STCM.MODID, "guide");
     private static Guide guide;
 
     public static void init() {
@@ -17,5 +17,5 @@ public class StaTechGuide {
                 .build();
     }
 
-    private StaTechGuide() {}
+    private STCMGuide() {}
 }

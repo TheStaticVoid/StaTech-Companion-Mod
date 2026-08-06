@@ -1,6 +1,6 @@
 package dev.thestaticvoid.stcm.mixin;
 
-import dev.thestaticvoid.stcm.StaTechCompanionConfig;
+import dev.thestaticvoid.stcm.STCMConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,8 +16,8 @@ public class LootedStatTriggerMixin {
   @Inject(method = "trigger", at = @At(value = "HEAD"))
   private static void grantExperience(ServerPlayer player, CallbackInfo ci) {
     final RandomSource random = RandomSource.createThreadSafe();
-    Integer min = StaTechCompanionConfig.CONFIG.lootrMinXp.get();
-    Integer max = StaTechCompanionConfig.CONFIG.lootrMaxXp.get();
+    Integer min = STCMConfig.CONFIG.lootrMinXp.get();
+    Integer max = STCMConfig.CONFIG.lootrMaxXp.get();
     player.giveExperiencePoints(random.nextInt(min, max));
     player.level()
         .playSound(

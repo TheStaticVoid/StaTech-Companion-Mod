@@ -14,7 +14,6 @@ description = '''${mod_description}'''
 
 [[mixins]]
 config = "${mod_id}.mixins.json"
-requiredMods = ["lootr"]
 
 [[dependencies."${mod_id}"]]
 modId = "neoforge"

@@ -119,7 +119,7 @@ dependencies {
     implementation "aztech:Modern-Industrialization:${modern_industrialization_version}"
     implementation "dev.technici4n:GrandPower:${grandpower_version}"
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
-    implementation("org.appliedenergistics:guideme:${guideme_version}")
+    implementation "org.appliedenergistics:guideme:${guideme_version}"
     implementation "noobanidus.mods.lootr:lootr-neoforge:${lootr_version}"
     // Example mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
