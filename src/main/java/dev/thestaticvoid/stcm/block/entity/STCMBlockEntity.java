@@ -13,9 +13,9 @@ public class STCMBlockEntity {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, STCM.ID);
 
-    public static final Supplier<BlockEntityType<NeoForgeHammerBlockEntity>> ENHANCED_FORGE_HAMMER_BE =
-            BLOCK_ENTITIES.register("enhanced_forge_hammer_be", () -> BlockEntityType.Builder.of(
-                    NeoForgeHammerBlockEntity::new, STCMBlock.ENHANCED_FORGE_HAMMER.get()).build(null));
+    public static final Supplier<BlockEntityType<NeoForgeHammerBlockEntity>> NEOFORGE_HAMMER_BE =
+            BLOCK_ENTITIES.register("neoforge_hammer_be", () -> BlockEntityType.Builder.of(
+                    NeoForgeHammerBlockEntity::new, STCMBlock.NEOFORGE_HAMMER.get()).build(null));
 
     public static void init(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

@@ -16,7 +16,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 @Mod(value = STCM.ID, dist = Dist.CLIENT)
 public class STCMClient {
     public STCMClient(IEventBus modBus, ModContainer modContainer) {
-        modBus.addListener(STCMEntityRenderer::init);
+//        modBus.addListener(STCMEntityRenderer::init);
     }
 
     @SubscribeEvent
@@ -26,6 +26,6 @@ public class STCMClient {
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(STCMMenuTypes.ENHANCED_FORGE_HAMMER_MENU.get(), NeoForgeHammerScreen::new);
+        event.register(STCMMenuTypes.NEOFORGE_HAMMER_MENU.get(), NeoForgeHammerScreen::new);
     }
 }

@@ -62,7 +62,7 @@ public class NeoForgeHammerBlock extends BaseEntityBlock {
             if (entity instanceof NeoForgeHammerBlockEntity blockEntity) {
                 ((ServerPlayer) player).openMenu(new SimpleMenuProvider(blockEntity, Component.translatable("gui.stcm.enhanced_forge_hammer")), pos);
             } else {
-                throw new IllegalStateException("Container provider is missing for Enhanced Forge Hammer");
+                throw new IllegalStateException("Container provider is missing for NeoForge Hammer");
             }
         }
 
@@ -76,7 +76,7 @@ public class NeoForgeHammerBlock extends BaseEntityBlock {
             return null;
         }
 
-        return createTickerHelper(blockEntityType, STCMBlockEntity.ENHANCED_FORGE_HAMMER_BE.get(),
+        return createTickerHelper(blockEntityType, STCMBlockEntity.NEOFORGE_HAMMER_BE.get(),
                 (level1, blockPos, blockState, blockEntity) -> blockEntity.tick(level1, blockPos, blockState));
     }
 }

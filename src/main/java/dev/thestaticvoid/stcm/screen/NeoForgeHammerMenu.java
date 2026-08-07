@@ -44,7 +44,7 @@ public class NeoForgeHammerMenu extends AbstractContainerMenu {
     }
 
     public NeoForgeHammerMenu(int containerId, Inventory inventory, BlockEntity entity, ContainerData data, ContainerLevelAccess context) {
-        super(STCMMenuTypes.ENHANCED_FORGE_HAMMER_MENU.get(), containerId);
+        super(STCMMenuTypes.NEOFORGE_HAMMER_MENU.get(), containerId);
         this.blockEntity = ((NeoForgeHammerBlockEntity) entity);
         this.level = inventory.player.level();
         this.data = data;
@@ -138,7 +138,7 @@ public class NeoForgeHammerMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(context, player, STCMBlock.ENHANCED_FORGE_HAMMER.get());
+        return stillValid(context, player, STCMBlock.NEOFORGE_HAMMER.get());
     }
 
     @Override

@@ -49,7 +49,7 @@ public class NeoForgeHammerBlockEntity extends BlockEntity implements MenuProvid
     };
 
     public NeoForgeHammerBlockEntity(BlockPos pos, BlockState blockState) {
-        super(STCMBlockEntity.ENHANCED_FORGE_HAMMER_BE.get(), pos, blockState);
+        super(STCMBlockEntity.NEOFORGE_HAMMER_BE.get(), pos, blockState);
         data = new ContainerData() {
             @Override
             public int get(int i) {

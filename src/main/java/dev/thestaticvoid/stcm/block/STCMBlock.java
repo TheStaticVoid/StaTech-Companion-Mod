@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class STCMBlock {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(STCM.ID);
 
-    public static final DeferredBlock<Block> ENHANCED_FORGE_HAMMER = registerBlock("enhanced_forge_hammer",
+    public static final DeferredBlock<Block> NEOFORGE_HAMMER = registerBlock("neoforge_hammer",
             () -> new NeoForgeHammerBlock(BlockBehaviour.Properties.of()));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {

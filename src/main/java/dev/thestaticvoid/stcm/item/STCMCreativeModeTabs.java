@@ -18,7 +18,7 @@ public class STCMCreativeModeTabs {
                     .title(Component.translatable("itemGroup.stcm"))
                     .displayItems(((itemDisplayParameters, output) -> {
                         output.accept(STCMItem.SPACE_SHIELD);
-                        output.accept(STCMBlock.ENHANCED_FORGE_HAMMER);
+                        output.accept(STCMBlock.NEOFORGE_HAMMER);
                     })).build());
 
     public static void init(IEventBus eventBus) {
