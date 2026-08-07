@@ -16,13 +16,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 
-public class EnhancedForgeHammerScreen extends AbstractContainerScreen<EnhancedForgeHammerMenu> {
+public class NeoForgeHammerScreen extends AbstractContainerScreen<NeoForgeHammerMenu> {
     private static final ResourceLocation FORGE_HAMMER_GUI = MI.id("textures/gui/container/forge_hammer.png");
     private static final int X_OFFSET = 61;
     private static final int Y_OFFSET = 14;
-    private final EnhancedForgeHammerMenu menu;
+    private final NeoForgeHammerMenu menu;
 
-    public EnhancedForgeHammerScreen(EnhancedForgeHammerMenu menu, Inventory inventory, Component title) {
+    public NeoForgeHammerScreen(NeoForgeHammerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.menu = menu;
     }

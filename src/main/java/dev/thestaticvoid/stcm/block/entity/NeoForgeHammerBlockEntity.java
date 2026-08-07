@@ -1,7 +1,7 @@
 package dev.thestaticvoid.stcm.block.entity;
 
 import aztech.modern_industrialization.items.ForgeTool;
-import dev.thestaticvoid.stcm.screen.EnhancedForgeHammerMenu;
+import dev.thestaticvoid.stcm.screen.NeoForgeHammerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jspecify.annotations.Nullable;
 
-public class EnhancedForgeHammerBlockEntity extends BlockEntity implements MenuProvider {
+public class NeoForgeHammerBlockEntity extends BlockEntity implements MenuProvider {
     private static final int TOOL_SLOT = 0;
     private static final int INPUT_SLOT = 1;
     private static final int OUTPUT_SLOT = 2;
@@ -48,7 +48,7 @@ public class EnhancedForgeHammerBlockEntity extends BlockEntity implements MenuP
         }
     };
 
-    public EnhancedForgeHammerBlockEntity(BlockPos pos, BlockState blockState) {
+    public NeoForgeHammerBlockEntity(BlockPos pos, BlockState blockState) {
         super(STCMBlockEntity.ENHANCED_FORGE_HAMMER_BE.get(), pos, blockState);
         data = new ContainerData() {
             @Override
@@ -75,7 +75,7 @@ public class EnhancedForgeHammerBlockEntity extends BlockEntity implements MenuP
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return new EnhancedForgeHammerMenu(i, inventory, this, data, ContainerLevelAccess.create(level, getBlockPos()));
+        return new NeoForgeHammerMenu(i, inventory, this, data, ContainerLevelAccess.create(level, getBlockPos()));
         // return new ForgeHammerScreenHandler(i, inventory);
     }
 

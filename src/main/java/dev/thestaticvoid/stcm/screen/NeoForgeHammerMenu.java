@@ -5,7 +5,7 @@ import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.items.ForgeTool;
 import aztech.modern_industrialization.thirdparty.fabrictransfer.api.item.ItemVariant;
 import dev.thestaticvoid.stcm.block.STCMBlock;
-import dev.thestaticvoid.stcm.block.entity.EnhancedForgeHammerBlockEntity;
+import dev.thestaticvoid.stcm.block.entity.NeoForgeHammerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 import java.util.*;
 
-public class EnhancedForgeHammerMenu extends AbstractContainerMenu {
+public class NeoForgeHammerMenu extends AbstractContainerMenu {
     private final DataSlot selectedRecipe;
     private final List<RecipeHolder<ForgeHammerRecipe>> availableRecipes;
 
@@ -36,16 +36,16 @@ public class EnhancedForgeHammerMenu extends AbstractContainerMenu {
     private ItemStack inputStackCache = ItemStack.EMPTY;
     private ItemStack toolStackCache = ItemStack.EMPTY;
 
-    public final EnhancedForgeHammerBlockEntity blockEntity;
+    public final NeoForgeHammerBlockEntity blockEntity;
     private final ContainerData data;
 
-    public EnhancedForgeHammerMenu(int containerId, Inventory inventory, FriendlyByteBuf extraData) {
+    public NeoForgeHammerMenu(int containerId, Inventory inventory, FriendlyByteBuf extraData) {
         this(containerId, inventory, inventory.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(3), ContainerLevelAccess.NULL);
     }
 
-    public EnhancedForgeHammerMenu(int containerId, Inventory inventory, BlockEntity entity, ContainerData data, ContainerLevelAccess context) {
+    public NeoForgeHammerMenu(int containerId, Inventory inventory, BlockEntity entity, ContainerData data, ContainerLevelAccess context) {
         super(STCMMenuTypes.ENHANCED_FORGE_HAMMER_MENU.get(), containerId);
-        this.blockEntity = ((EnhancedForgeHammerBlockEntity) entity);
+        this.blockEntity = ((NeoForgeHammerBlockEntity) entity);
         this.level = inventory.player.level();
         this.data = data;
         this.context = context;

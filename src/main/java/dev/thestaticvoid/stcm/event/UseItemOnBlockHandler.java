@@ -4,17 +4,19 @@ import aztech.modern_industrialization.MIBlock;
 import dev.thestaticvoid.stcm.STCM;
 import dev.thestaticvoid.stcm.entity.PrimedNuke;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 
+@EventBusSubscriber(modid = STCM.MODID)
 public class UseItemOnBlockHandler {
 
+    @SubscribeEvent
     public static void onPlayerUseItem(UseItemOnBlockEvent event) {
         if (!event.getLevel().isClientSide()) {
             UseOnContext context = event.getUseOnContext();

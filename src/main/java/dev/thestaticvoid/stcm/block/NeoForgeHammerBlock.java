@@ -1,7 +1,7 @@
 package dev.thestaticvoid.stcm.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.thestaticvoid.stcm.block.entity.EnhancedForgeHammerBlockEntity;
+import dev.thestaticvoid.stcm.block.entity.NeoForgeHammerBlockEntity;
 import dev.thestaticvoid.stcm.block.entity.STCMBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -21,10 +21,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
-public class EnhancedForgeHammerBlock extends BaseEntityBlock {
-    public static final MapCodec<EnhancedForgeHammerBlock> CODEC = simpleCodec(EnhancedForgeHammerBlock::new);
+public class NeoForgeHammerBlock extends BaseEntityBlock {
+    public static final MapCodec<NeoForgeHammerBlock> CODEC = simpleCodec(NeoForgeHammerBlock::new);
 
-    public EnhancedForgeHammerBlock(Properties properties) {
+    public NeoForgeHammerBlock(Properties properties) {
         super(properties);
     }
 
@@ -35,7 +35,7 @@ public class EnhancedForgeHammerBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new EnhancedForgeHammerBlockEntity(blockPos, blockState);
+        return new NeoForgeHammerBlockEntity(blockPos, blockState);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class EnhancedForgeHammerBlock extends BaseEntityBlock {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
 
-            if (blockEntity instanceof EnhancedForgeHammerBlockEntity efhBlockEntity) {
+            if (blockEntity instanceof NeoForgeHammerBlockEntity efhBlockEntity) {
                 efhBlockEntity.drops();
             }
         }
@@ -59,7 +59,7 @@ public class EnhancedForgeHammerBlock extends BaseEntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity entity = level.getBlockEntity(pos);
-            if (entity instanceof EnhancedForgeHammerBlockEntity blockEntity) {
+            if (entity instanceof NeoForgeHammerBlockEntity blockEntity) {
                 ((ServerPlayer) player).openMenu(new SimpleMenuProvider(blockEntity, Component.translatable("gui.stcm.enhanced_forge_hammer")), pos);
             } else {
                 throw new IllegalStateException("Container provider is missing for Enhanced Forge Hammer");
