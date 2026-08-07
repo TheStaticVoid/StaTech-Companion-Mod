@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class STCMBlockEntity {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, STCM.MODID);
+            DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, STCM.ID);
 
     public static final Supplier<BlockEntityType<NeoForgeHammerBlockEntity>> ENHANCED_FORGE_HAMMER_BE =
             BLOCK_ENTITIES.register("enhanced_forge_hammer_be", () -> BlockEntityType.Builder.of(

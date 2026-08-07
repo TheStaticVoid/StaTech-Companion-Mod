@@ -7,7 +7,7 @@ import guideme.scene.element.SceneElementTagCompiler;
 import net.minecraft.resources.ResourceLocation;
 
 public class STCMGuide {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(STCM.MODID, "guide");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(STCM.ID, "guide");
     private static Guide guide;
 
     public static void init() {

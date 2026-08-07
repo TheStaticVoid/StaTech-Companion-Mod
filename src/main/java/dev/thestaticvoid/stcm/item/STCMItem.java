@@ -8,7 +8,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class STCMItem {
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(STCM.MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(STCM.ID);
 
     public static final DeferredItem<Item> SPACE_SHIELD = ITEMS.registerSimpleItem(
             "space_shield", new Item.Properties().stacksTo(1).rarity(Rarity.RARE)

@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class STCMMenuTypes {
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, STCM.MODID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, STCM.ID);
 
     public static final DeferredHolder<MenuType<?>, MenuType<NeoForgeHammerMenu>> ENHANCED_FORGE_HAMMER_MENU =
             registerMenuType("enhanced_forge_hammer_menu", NeoForgeHammerMenu::new);

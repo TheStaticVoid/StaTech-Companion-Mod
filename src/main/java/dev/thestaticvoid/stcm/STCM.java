@@ -8,7 +8,6 @@ import dev.thestaticvoid.stcm.guideme.STCMGuide;
 import dev.thestaticvoid.stcm.item.STCMCreativeModeTabs;
 import dev.thestaticvoid.stcm.item.STCMItem;
 import dev.thestaticvoid.stcm.screen.STCMMenuTypes;
-import dev.thestaticvoid.stcm.space.SpaceItems;
 import dev.thestaticvoid.stcm.world.STCMWorld;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -17,13 +16,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import org.slf4j.Logger;
 
-@Mod(STCM.MODID)
+@Mod(STCM.ID)
 public class STCM {
-    public static final String MODID = "stcm";
+    public static final String ID = "stcm";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public STCM(IEventBus modEventBus, ModContainer modContainer) {
-        SpaceItems.init();
         STCMGuide.init();
 
         modContainer.registerConfig(ModConfig.Type.COMMON, STCMConfig.CONFIG_SPEC);
@@ -37,7 +35,7 @@ public class STCM {
         STCMEntity.init(modEventBus);
     }
 
-    public static ResourceLocation Id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(ID, path);
     }
 }

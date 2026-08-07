@@ -7,13 +7,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
 
-@EventBusSubscriber(modid = STCM.MODID)
+@EventBusSubscriber(modid = STCM.ID)
 public class UseItemOnBlockHandler {
 
     @SubscribeEvent
@@ -32,7 +33,7 @@ public class UseItemOnBlockHandler {
                     context.getLevel().addFreshEntity(primedNuke);
                     context.getLevel().playSound(null, primedNuke.getX(), primedNuke.getY(), primedNuke.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
                     context.getLevel().gameEvent(context.getPlayer(), GameEvent.PRIME_FUSE, context.getClickedPos());
-                    // event.cancelWithResult(ItemInteractionResult.CONSUME);
+                    event.cancelWithResult(ItemInteractionResult.CONSUME);
                 }
             }
         }

@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class STCMCreativeModeTabs {
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, STCM.MODID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, STCM.ID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> COMAPNION_MOD_TAB = CREATIVE_MODE_TAB.register("stcm_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(STCMItem.SPACE_SHIELD.get()))

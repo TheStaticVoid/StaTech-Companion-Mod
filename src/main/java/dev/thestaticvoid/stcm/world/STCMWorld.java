@@ -7,7 +7,7 @@ import net.minecraft.world.damagesource.DamageType;
 import net.neoforged.bus.api.IEventBus;
 
 public class STCMWorld {
-    public static final ResourceKey<DamageType> NUKE_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, STCM.Id("nuke_damage"));
+    public static final ResourceKey<DamageType> NUKE_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, STCM.id("nuke_damage"));
 
     public static void init(IEventBus eventBus) {
 

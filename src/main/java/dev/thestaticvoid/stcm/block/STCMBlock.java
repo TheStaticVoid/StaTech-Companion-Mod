@@ -13,7 +13,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public class STCMBlock {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(STCM.MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(STCM.ID);
 
     public static final DeferredBlock<Block> ENHANCED_FORGE_HAMMER = registerBlock("enhanced_forge_hammer",
             () -> new NeoForgeHammerBlock(BlockBehaviour.Properties.of()));

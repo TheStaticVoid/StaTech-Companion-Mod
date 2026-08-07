@@ -1,4 +1,4 @@
-package dev.thestaticvoid.stcm.space;
+package dev.thestaticvoid.stcm.world.dimension;
 
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.world.phys.Vec3;
