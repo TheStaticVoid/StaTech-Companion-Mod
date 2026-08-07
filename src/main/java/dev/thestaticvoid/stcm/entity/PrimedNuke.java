@@ -84,7 +84,7 @@ public class PrimedNuke extends Entity implements TraceableEntity {
                 this.getZ(),
                 EXPLOSION_FORCE,
                 true,
-                Level.ExplosionInteraction.TNT
+                Level.ExplosionInteraction.BLOCK
         );
     }
 
