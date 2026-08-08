@@ -9,16 +9,13 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-@Mod(value = STCM.ID, dist = Dist.CLIENT)
+@EventBusSubscriber(modid = STCM.ID, value = Dist.CLIENT)
 public class STCMClient {
-    public STCMClient(IEventBus modBus, ModContainer modContainer) {
-//        modBus.addListener(STCMEntityRenderer::init);
-    }
-
     @SubscribeEvent
     public static void onRegisterDimensionSpecialEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(STCM.id("space"), new SpaceDimensionEffects());

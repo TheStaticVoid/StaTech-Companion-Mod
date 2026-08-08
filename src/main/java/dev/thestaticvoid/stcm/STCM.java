@@ -22,17 +22,18 @@ public class STCM {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public STCM(IEventBus modEventBus, ModContainer modContainer) {
-        STCMGuide.init();
-
         modContainer.registerConfig(ModConfig.Type.COMMON, STCMConfig.CONFIG_SPEC);
+
+        STCMGuide.init();
 
         STCMBlock.init(modEventBus);
         STCMBlockEntity.init(modEventBus);
-        STCMMenuTypes.init(modEventBus);
         STCMItem.init(modEventBus);
         STCMCreativeModeTabs.init(modEventBus);
-        STCMWorld.init(modEventBus);
+
         STCMEntity.init(modEventBus);
+        STCMMenuTypes.init(modEventBus);
+        STCMWorld.init(modEventBus);
     }
 
     public static ResourceLocation id(String path) {
