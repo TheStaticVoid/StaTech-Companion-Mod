@@ -1,13 +1,24 @@
 package dev.thestaticvoid.stcm.screen;
 
+import aztech.modern_industrialization.MIRegistries;
+import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.items.ForgeTool;
+import aztech.modern_industrialization.thirdparty.fabrictransfer.api.item.ItemVariant;
+import dev.thestaticvoid.stcm.block.NeoForgeHammerBlock;
+import dev.thestaticvoid.stcm.block.entity.NeoForgeHammerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
+import java.util.*;
 
 public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     public static final int SLOT_INPUT = 0;
@@ -20,6 +31,12 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     private static final int USE_ROW_SLOT_END = 39;
     private final ContainerData data;
     private final Container container;
+    private final Level level;
+
+    private long lastSoundTime = 0;
+    private final List<RecipeHolder<ForgeHammerRecipe>> availableRecipes;
+    private final DataSlot selectedRecipe;
+    private ItemStack inputStackCache = ItemStack.EMPTY, toolStackCache = ItemStack.EMPTY;
 
     public NeoForgeHammerScreenHandler(int containerId, Inventory playerInventory, FriendlyByteBuf dataContainer) {
         this(containerId, playerInventory, new SimpleContainer(3), new SimpleContainerData(3));
@@ -30,13 +47,39 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
         this.container = container;
         this.data = containerData;
+        this.level = playerInventory.player.level();
 
-        this.addSlot(new Slot(container, SLOT_INPUT, 34, 33));
-        this.addSlot(new Slot(container, SLOT_TOOL, 8, 33));
-        this.addSlot(new Slot(container, SLOT_OUTPUT, 143, 33));
+        this.availableRecipes = new ArrayList<>();
+        this.selectedRecipe = DataSlot.standalone();
+
+        this.addSlot(new Slot(container, SLOT_INPUT, 34, 33) {
+            @Override
+            public void setChanged() {
+                super.setChanged();
+                NeoForgeHammerScreenHandler.this.slotsChanged(this.container);
+            }
+        });
+        this.addSlot(new Slot(container, SLOT_TOOL, 8, 33) {
+            @Override
+            public void setChanged() {
+                super.setChanged();
+                NeoForgeHammerScreenHandler.this.slotsChanged(this.container);
+            }
+        });
+        this.addSlot(new Slot(container, SLOT_OUTPUT, 143, 33) {
+            @Override
+            public void onTake(Player player, ItemStack stack) {
+                super.onTake(player, stack);
+            }
+        });
+
+
 
         this.addPlayerInventory(playerInventory);
         this.addPlayerHotbar(playerInventory);
+
+        this.addDataSlot(selectedRecipe);
+        this.addDataSlots(containerData);
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
@@ -51,6 +94,115 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         for (int x = 0; x < 9; ++x) {
             this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 142));
         }
+    }
+
+    public int getAvailableRecipeCount() {
+        return this.availableRecipes.size();
+    }
+
+    public List<RecipeHolder<ForgeHammerRecipe>> getAvailableRecipes() {
+        return this.availableRecipes;
+    }
+
+    public int getSelectedRecipe() {
+        return this.selectedRecipe.get();
+    }
+
+    private boolean isInBounds(int id) {
+        return id >= 0 && id < this.availableRecipes.size();
+    }
+
+    private ItemStack getInputStack() {
+        return this.container.getItem(SLOT_INPUT);
+    }
+
+    private void setInputStack(ItemStack stack) {
+        this.container.setItem(SLOT_INPUT, stack);
+    }
+
+    private ItemStack getToolStack() {
+        return this.container.getItem(SLOT_TOOL);
+    }
+
+    private void setToolStack(ItemStack stack) {
+        this.container.setItem(SLOT_TOOL, stack);
+    }
+
+    private ItemStack getOutputStack() {
+        return this.container.getItem(SLOT_OUTPUT);
+    }
+
+    private void setOutputStack(ItemStack stack) {
+        this.container.setItem(SLOT_OUTPUT, stack);
+    }
+
+    public void updateStatus() {
+        this.inputStackCache = getInputStack().copy();
+        this.toolStackCache = getToolStack().copy();
+
+        RecipeHolder<ForgeHammerRecipe> old = isInBounds(selectedRecipe.get()) ? availableRecipes.get(selectedRecipe.get()) : null;
+
+        this.availableRecipes.clear();;
+        this.selectedRecipe.set(-1);
+        setOutputStack(ItemStack.EMPTY);
+
+        if (!getInputStack().isEmpty()) {
+            Set<ItemVariant> outputs = new HashSet<>();
+
+            var recipes = new ArrayList<>(this.level.getRecipeManager().getAllRecipesFor(MIRegistries.FORGE_HAMMER_RECIPE_TYPE.get()));
+            // Process recipes with hammer damage first, duplicates will be filtered by output!
+            recipes.sort(Comparator.comparing(h -> -h.value().hammerDamage()));
+
+            for (var holder : recipes) {
+                ForgeHammerRecipe recipe = holder.value();
+
+                if (recipe.ingredient().test(getInputStack()) && recipe.count() <= getInputStack().getCount()) {
+                    var output = ItemVariant.of(recipe.result());
+                    if ((recipe.hammerDamage() != 0) && (!getToolStack().isEmpty())) {
+                        outputs.add(output);
+                        availableRecipes.add(holder);
+                    } else if (recipe.hammerDamage() == 0 && !outputs.contains(output)) {
+                        outputs.add(output);
+                        availableRecipes.add(holder);
+                    }
+                }
+            }
+
+            availableRecipes.sort(Comparator.comparing(RecipeHolder::id));
+
+            for (int i = 0; i < availableRecipes.size(); i++) {
+                if (old == availableRecipes.get(i)) {
+                    this.selectedRecipe.set(i);
+                    break;
+                }
+            }
+            populateResult();
+        }
+    }
+
+    void populateResult() {
+        if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
+            RecipeHolder<ForgeHammerRecipe> current = this.availableRecipes.get(getSelectedRecipe());
+            if (current.value().hammerDamage() == 0
+                    || (!getToolStack().isEmpty() && getToolStack().getDamageValue() < getToolStack().getMaxDamage())) {
+                this.setOutputStack(current.value().result().copy());
+            } else {
+                this.setOutputStack(ItemStack.EMPTY);
+            }
+        } else {
+            this.setOutputStack(ItemStack.EMPTY);
+        }
+
+        this.broadcastChanges();
+    }
+
+    @Override
+    public void slotsChanged(Container container) {
+        if (!ItemStack.matches(this.inputStackCache, getInputStack()) || !ItemStack.matches(this.toolStackCache, getToolStack())) {
+            updateStatus();
+        }
+
+        super.slotsChanged(container);
     }
 
     @Override
@@ -100,5 +252,14 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return this.container.stillValid(player);
+    }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (this.isInBounds(id)) {
+            this.selectedRecipe.set(id);
+            this.populateResult();
+        }
+        return true;
     }
 }

@@ -1,6 +1,9 @@
 package dev.thestaticvoid.stcm.block.entity;
 
+import aztech.modern_industrialization.MIRegistries;
+import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.items.ForgeTool;
+import aztech.modern_industrialization.thirdparty.fabrictransfer.api.item.ItemVariant;
 import dev.thestaticvoid.stcm.screen.NeoForgeHammerScreenHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -11,7 +14,9 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
