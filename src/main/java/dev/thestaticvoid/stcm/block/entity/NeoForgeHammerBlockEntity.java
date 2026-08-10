@@ -1,9 +1,6 @@
 package dev.thestaticvoid.stcm.block.entity;
 
-import aztech.modern_industrialization.MIRegistries;
-import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.items.ForgeTool;
-import aztech.modern_industrialization.thirdparty.fabrictransfer.api.item.ItemVariant;
 import dev.thestaticvoid.stcm.screen.NeoForgeHammerScreenHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -14,9 +11,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -30,23 +25,30 @@ public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
     private NonNullList<ItemStack> items;
     private final ContainerData dataAccess;
 
+    int currentRecipe = -1;
+
     public NeoForgeHammerBlockEntity(BlockPos pos, BlockState blockState) {
         super(STCMBlockEntity.NEOFORGE_HAMMER_BE.get(), pos, blockState);
         this.items = NonNullList.withSize(3, ItemStack.EMPTY);
         this.dataAccess = new ContainerData() {
             @Override
             public int get(int i) {
-                return 0;
+                switch(i) {
+                    case 0: return NeoForgeHammerBlockEntity.this.currentRecipe;
+                    default: return -1;
+                }
             }
 
             @Override
             public void set(int i, int i1) {
-
+                switch(i) {
+                    case 0: NeoForgeHammerBlockEntity.this.currentRecipe = i1;
+                }
             }
 
             @Override
             public int getCount() {
-                return 0;
+                return 1;
             }
         };
     }
