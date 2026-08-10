@@ -1,130 +1,97 @@
 package dev.thestaticvoid.stcm.screen;
 
-import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
-import dev.thestaticvoid.stcm.block.STCMBlock;
-import dev.thestaticvoid.stcm.block.entity.NeoForgeHammerBlockEntity;
+import aztech.modern_industrialization.items.ForgeTool;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
-    private final DataSlot selectedRecipe;
-    private final List<RecipeHolder<ForgeHammerRecipe>> availableRecipes;
-
-    public final Slot output;
-    public final Slot tool;
-    public final Slot input;
-    private final ContainerLevelAccess context;
-    private final Level level;
-    private final Player player;
-    private long lastSoundTime = 0;
-
-    public final NeoForgeHammerBlockEntity blockEntity;
+    public static final int SLOT_INPUT = 0;
+    public static final int SLOT_TOOL = 1;
+    public static final int SLOT_OUTPUT = 2;
+    public static final int SLOT_COUNT = 3;
+    private static final int INV_SLOT_START = 3;
+    private static final int INV_SLOT_END = 30;
+    private static final int USE_ROW_SLOT_START = 30;
+    private static final int USE_ROW_SLOT_END = 39;
     private final ContainerData data;
+    private final Container container;
 
-    public NeoForgeHammerScreenHandler(int syncId, Inventory playerInventory, FriendlyByteBuf containerData) {
-        this(syncId, playerInventory, playerInventory.player.level().getBlockEntity(containerData.readBlockPos()), new SimpleContainerData(3), ContainerLevelAccess.NULL);
+    public NeoForgeHammerScreenHandler(int containerId, Inventory playerInventory, FriendlyByteBuf dataContainer) {
+        this(containerId, playerInventory, new SimpleContainer(3), new SimpleContainerData(3));
     }
 
-    public NeoForgeHammerScreenHandler(int syncId, Inventory playerInventory, BlockEntity entity, ContainerData data, ContainerLevelAccess context) {
-        super(STCMMenuTypes.NEOFORGE_HAMMER_MENU.get(), syncId);
-        this.blockEntity = ((NeoForgeHammerBlockEntity) entity);
-        this.level = playerInventory.player.level();
-        this.data = data;
-        this.context = context;
-        this.selectedRecipe = DataSlot.standalone();
-        this.availableRecipes = new ArrayList<>();
-        this.player = playerInventory.player;
+    public NeoForgeHammerScreenHandler(int containerId, Inventory playerInventory, Container container, ContainerData containerData) {
+        super(STCMMenuTypes.NEOFORGE_HAMMER_MENU.get(), containerId);
 
-        addPlayerInventory(playerInventory);
-        addPlayerHotbar(playerInventory);
+        this.container = container;
+        this.data = containerData;
 
-        this.tool = this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 8, 33));
-        this.input = this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 34, 33));
-        this.output = this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 2, 143, 33));
+        this.addSlot(new Slot(container, SLOT_INPUT, 34, 33));
+        this.addSlot(new Slot(container, SLOT_TOOL, 8, 33));
+        this.addSlot(new Slot(container, SLOT_OUTPUT, 143, 33));
 
-        addDataSlots(data);
+        this.addPlayerInventory(playerInventory);
+        this.addPlayerHotbar(playerInventory);
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
-        for (int i = 0; i < 3; ++i) {
-            for (int l = 0; l < 9; ++l) {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
             }
         }
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
-        for (int i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+        for (int x = 0; x < 9; ++x) {
+            this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 142));
         }
-    }
-
-    @Override
-    public boolean clickMenuButton(Player player, int id) {
-        return blockEntity.clickMenuButton(player, id);
-    }
-
-    @Override
-    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
-        return slot.container != this.output.container && super.canTakeItemForPickAll(stack, slot);
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+        Slot slot = (Slot) this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemStack1 = slot.getItem();
+            itemStack = itemStack1.copy();
 
-        if (slot.hasItem()) {
-            ItemStack itemStack2 = slot.getItem();
-            Item item = itemStack2.getItem();
-            itemStack = itemStack2.copy();
-            if (index == 38) {
-                item.onCraftedBy(itemStack2, player.level(), player);
-                if (!this.moveItemStackTo(itemStack2, 0, 36, true)) {
+            if (index == SLOT_OUTPUT) {
+                if (!this.moveItemStackTo(itemStack1, INV_SLOT_START, USE_ROW_SLOT_END, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onQuickCraft(itemStack2, itemStack);
-            } else if (index == 37 || index == 36) {
-                if (!this.moveItemStackTo(itemStack2, 0, 36, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (index < 36) {
-                if (!this.moveItemStackTo(itemStack2, 36, 38, true)) {
-                    if (index < 27) {
-                        if (!this.moveItemStackTo(itemStack2, 27, 36, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                    } else {
+                slot.onQuickCraft(itemStack1, itemStack);
+            } else if (index != SLOT_INPUT && index != SLOT_TOOL) {
+                if (itemStack1.is(ForgeTool.TAG)) {
+                    if (!this.moveItemStackTo(itemStack1, SLOT_TOOL, SLOT_TOOL + 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else {
+                    if (!this.moveItemStackTo(itemStack1, SLOT_INPUT, SLOT_INPUT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 }
-            }
-
-            if (itemStack2.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            }
-
-            slot.setChanged();
-            if (itemStack2.getCount() == itemStack.getCount()) {
+            } else if (!this.moveItemStackTo(itemStack1, INV_SLOT_START, USE_ROW_SLOT_END, false)) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(player, itemStack2);
-            this.broadcastChanges();
+            if (itemStack1.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+
+            if (itemStack1.getCount() == itemStack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(player, itemStack1);
         }
 
         return itemStack;
@@ -132,6 +99,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(context, player, STCMBlock.NEOFORGE_HAMMER.get());
+        return this.container.stillValid(player);
     }
 }
