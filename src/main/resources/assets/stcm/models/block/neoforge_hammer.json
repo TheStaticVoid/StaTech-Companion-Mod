@@ -1,7 +1,7 @@
 {
   "textures": {
-    "forge_hammer": "stcm:block/forge_hammer",
-    "particle" :  "stcm:block/forge_hammer"
+    "forge_hammer": "stcm:block/neoforge_hammer",
+    "particle" :  "stcm:block/neoforge_hammer"
   },
   "display": {
     "gui": {
