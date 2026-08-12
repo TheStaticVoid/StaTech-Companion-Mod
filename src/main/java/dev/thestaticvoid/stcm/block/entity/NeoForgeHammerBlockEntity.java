@@ -40,9 +40,9 @@ public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
             }
 
             @Override
-            public void set(int i, int i1) {
+            public void set(int i, int value) {
                 switch(i) {
-                    case 0: NeoForgeHammerBlockEntity.this.currentRecipe = i1;
+                    case 0: NeoForgeHammerBlockEntity.this.currentRecipe = value;
                 }
             }
 
@@ -62,7 +62,7 @@ public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
 //            this.setChanged();
 //        }
 
-        if (index == SLOT_INPUT || index == SLOT_TOOL) {
+        if ((index == SLOT_INPUT || index == SLOT_TOOL) && !flag) {
             this.setChanged();
         }
     }
@@ -107,11 +107,13 @@ public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
         super.loadAdditional(tag, registries);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(tag, this.items, registries);
+        this.currentRecipe = tag.getInt("CurrentRecipe");
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         ContainerHelper.saveAllItems(tag, this.items, registries);
+        tag.putInt("CurrentRecipe", this.currentRecipe);
     }
 }

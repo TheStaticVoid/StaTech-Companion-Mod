@@ -5,6 +5,10 @@ import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.items.ForgeTool;
 import aztech.modern_industrialization.thirdparty.fabrictransfer.api.item.ItemVariant;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,6 +32,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     private final ContainerData data;
     private final Container container;
     private final Level level;
+    private final Player player;
 
     private long lastSoundTime = 0;
     private final List<RecipeHolder<ForgeHammerRecipe>> availableRecipes;
@@ -48,9 +53,11 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         this.container = container;
         this.data = containerData;
         this.level = playerInventory.player.level();
+        this.player = playerInventory.player;
 
         this.availableRecipes = new ArrayList<>();
         this.selectedRecipe = DataSlot.standalone();
+        this.selectedRecipe.set(this.data.get(0));
 
         this.input = this.addSlot(new Slot(container, SLOT_INPUT, 34, 33) {
             @Override
@@ -67,13 +74,50 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
             }
         });
         this.output = this.addSlot(new Slot(container, SLOT_OUTPUT, 143, 33) {
+            private int removeCount = 0;
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return false;
+            }
+
+            @Override
+            public ItemStack remove(int amount) {
+                var stack = super.remove(amount);
+                removeCount += stack.getCount();
+                return stack;
+            }
+
+            @Override
+            protected void onQuickCraft(ItemStack stack, int amount) {
+                this.removeCount += amount;
+                checkTakeAchievements(stack);
+            }
+
+            @Override
+            protected void onSwapCraft(int numItemsCrafted) {
+                this.removeCount += numItemsCrafted;
+            }
+
+            @Override
+            protected void checkTakeAchievements(ItemStack stack) {
+                if (this.removeCount > 0) {
+                    stack.onCraftedBy(level, player, this.removeCount);
+                    this.removeCount = 0;
+                }
+            }
+
             @Override
             public void onTake(Player player, ItemStack stack) {
-                super.onTake(player, stack);
+                checkTakeAchievements(stack);
+                NeoForgeHammerScreenHandler.this.onCraft();
+
+                if (lastSoundTime < level.getGameTime()) {
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SMITHING_TABLE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    lastSoundTime = level.getGameTime();
+                }
             }
         });
-
-
 
         this.addPlayerInventory(playerInventory);
         this.addPlayerHotbar(playerInventory);
@@ -105,7 +149,13 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     }
 
     public int getSelectedRecipe() {
+        this.selectedRecipe.set(this.data.get(0));
         return this.selectedRecipe.get();
+    }
+
+    public void setSelectedRecipe(int id) {
+        this.selectedRecipe.set(id);
+        this.data.set(0, id);
     }
 
     private boolean isInBounds(int id) {
@@ -119,7 +169,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         RecipeHolder<ForgeHammerRecipe> old = isInBounds(selectedRecipe.get()) ? availableRecipes.get(selectedRecipe.get()) : null;
 
         this.availableRecipes.clear();
-        this.selectedRecipe.set(-1);
+        this.setSelectedRecipe(-1);
         this.output.set(ItemStack.EMPTY);
 
         if (!input.getItem().isEmpty()) {
@@ -148,7 +198,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
             for (int i = 0; i < availableRecipes.size(); i++) {
                 if (old == availableRecipes.get(i)) {
-                    this.selectedRecipe.set(i);
+                    this.setSelectedRecipe(i);
                     break;
                 }
             }
@@ -170,6 +220,41 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         }
 
         this.broadcastChanges();
+    }
+
+    private void onCraft() {
+        // Sometimes available recipes is empty and needs to be refreshed
+        if (!this.isInBounds(this.getSelectedRecipe())) {
+            this.forceUpdate();
+        }
+
+        RecipeHolder<ForgeHammerRecipe> current = this.availableRecipes.get(this.selectedRecipe.get());
+        this.input.getItem().shrink(current.value().count());
+        if (!tool.getItem().isEmpty()) {
+            if (!level.isClientSide()) {
+                tool.getItem().hurtAndBreak(current.value().hammerDamage(), (ServerLevel) level, (ServerPlayer) this.player,
+                        item -> tool.set(ItemStack.EMPTY));
+            }
+            if (tool.getItem().getDamageValue() >= tool.getItem().getMaxDamage()) {
+                tool.set(ItemStack.EMPTY);
+
+
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
+            }
+
+        } else if (current.value().hammerDamage() > 0) {
+            throw new IllegalStateException("Forge Hammer Exception : Tool crafting without a tool");
+        }
+
+        this.updateStatus();
+    }
+
+    private void forceUpdate() {
+        // Some cases were the client opens the menu and available recipes are not synced properly
+        // There's probably a less laggy way to do this, but be my guest to fix it.
+        var cachedSelection = this.getSelectedRecipe();
+        this.updateStatus();
+        this.setSelectedRecipe(cachedSelection);
     }
 
     @Override
@@ -232,8 +317,10 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        this.forceUpdate();
+
         if (this.isInBounds(id)) {
-            this.selectedRecipe.set(id);
+            this.setSelectedRecipe(id);
             this.populateResult();
         }
         return true;
@@ -243,5 +330,11 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
         // Treat double-clicks on the output as two normal clicks instead of trying to "pick all"
         return slot.container != this.output.container && super.canTakeItemForPickAll(stack, slot);
+    }
+
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        this.setSelectedRecipe(this.selectedRecipe.get());
     }
 }
