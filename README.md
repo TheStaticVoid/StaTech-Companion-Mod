@@ -5,3 +5,4 @@ Minecraft 1.21.1 NeoForge mod that adds special features for the StaTech Industr
 - Space dimension (stcm:space)
 - Personal Shield Generator - protects the user from dying in space
 - Opening a lootr container grants the user some extra xp
+- Adds a NeoForgeHammer that is a BlockEntity variant of MI's ForgeHammer

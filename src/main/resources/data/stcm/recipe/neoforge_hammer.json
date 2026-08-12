@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "modern_industrialization:forge_hammer"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "stcm:neoforge_hammer"
+  }
+}

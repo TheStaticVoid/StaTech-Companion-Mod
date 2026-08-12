@@ -7,6 +7,7 @@ import dev.thestaticvoid.stcm.entity.STCMEntity;
 import dev.thestaticvoid.stcm.guideme.STCMGuide;
 import dev.thestaticvoid.stcm.item.STCMCreativeModeTabs;
 import dev.thestaticvoid.stcm.item.STCMItem;
+import dev.thestaticvoid.stcm.network.STCMPacket;
 import dev.thestaticvoid.stcm.screen.STCMMenuTypes;
 import dev.thestaticvoid.stcm.world.STCMWorld;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.slf4j.Logger;
 
 @Mod(STCM.ID)
@@ -34,6 +36,8 @@ public class STCM {
         STCMEntity.init(modEventBus);
         STCMMenuTypes.init(modEventBus);
         STCMWorld.init(modEventBus);
+
+        modEventBus.addListener(RegisterPayloadHandlersEvent.class, STCMPacket::init);
     }
 
     public static ResourceLocation id(String path) {

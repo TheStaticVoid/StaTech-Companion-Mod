@@ -9,7 +9,6 @@ version = mod_version
 group = mod_group_id
 
 repositories {
-    mavenLocal()
     maven {
         name "Modmaven"
         url "https://modmaven.dev"
@@ -22,12 +21,20 @@ repositories {
             includeGroup "net.swedz"
             // GuideMe
             includeGroup "appeng.guideme"
+            // JEI
+            includeGroup "mezz.jei"
         }
     }
     maven {
         url = 'https://maven.blamejared.com'
         content {
             includeGroup 'noobanidus.mods.lootr'
+        }
+    }
+    maven {
+        url "https://repo.sleeping.town/"
+        content {
+            includeGroup "dev.emi"
         }
     }
 }
@@ -115,57 +122,50 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
+configurations {
+    localRuntimeOnly
+    runtimeClasspath.extendsFrom localRuntimeOnly
+}
+
 dependencies {
     implementation "aztech:Modern-Industrialization:${modern_industrialization_version}"
     implementation "dev.technici4n:GrandPower:${grandpower_version}"
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
     implementation "org.appliedenergistics:guideme:${guideme_version}"
     implementation "noobanidus.mods.lootr:lootr-neoforge:${lootr_version}"
-    // Example mod dependency with JEI
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-    // compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
-    // runtimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
-
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    compileOnly "dev.emi:emi-neoforge:${project.emi_version}:api"
+    localRuntimeOnly "dev.emi:emi-neoforge:${project.emi_version}"
+    compileOnly "mezz.jei:jei-${project.jei_minecraft_version}-neoforge-api:${project.jei_version}"
+    localRuntimeOnly "mezz.jei:jei-${project.jei_minecraft_version}-neoforge:${project.jei_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
-    var replaceProperties = [minecraft_version      : minecraft_version,
-                             minecraft_version_range: minecraft_version_range,
-                             neo_version            : neo_version,
-                             neo_version_range      : neo_version_range,
-                             loader_version_range   : loader_version_range,
-                             mod_id                 : mod_id,
-                             mod_name               : mod_name,
-                             mod_license            : mod_license,
-                             mod_version            : mod_version,
-                             mod_authors            : mod_authors,
-                             mod_description        : mod_description,
-                             mod_github_link        : mod_github_link,
-                             modern_industrialization_version : modern_industrialization_version,
-                             modern_industrialization_version_range : modern_industrialization_version_range,
-                             grandpower_version : grandpower_version,
-                             tesseract_version : tesseract_version,
-                             guideme_version : guideme_version,
-                             guideme_version_range : guideme_version_range,
-                             lootr_version : lootr_version,
-                             lootr_version_range : lootr_version_range]
+    var replaceProperties = [minecraft_version                          : minecraft_version,
+                             minecraft_version_range                    : minecraft_version_range,
+                             neo_version                                : neo_version,
+                             neo_version_range                          : neo_version_range,
+                             loader_version_range                       : loader_version_range,
+                             mod_id                                     : mod_id,
+                             mod_name                                   : mod_name,
+                             mod_license                                : mod_license,
+                             mod_version                                : mod_version,
+                             mod_authors                                : mod_authors,
+                             mod_description                            : mod_description,
+                             mod_github_link                            : mod_github_link,
+                             modern_industrialization_version           : modern_industrialization_version,
+                             modern_industrialization_version_range     : modern_industrialization_version_range,
+                             grandpower_version                         : grandpower_version,
+                             tesseract_version                          : tesseract_version,
+                             guideme_version                            : guideme_version,
+                             guideme_version_range                      : guideme_version_range,
+                             lootr_version                              : lootr_version,
+                             lootr_version_range                        : lootr_version_range,
+                             emi_version                                : emi_version,
+                             emi_version_range                          : emi_version_range,
+                             jei_version                                : jei_version,
+                             jei_version_range                          : jei_version_range]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"

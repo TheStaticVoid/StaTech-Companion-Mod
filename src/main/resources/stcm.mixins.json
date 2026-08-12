@@ -4,7 +4,8 @@
   "package": "dev.thestaticvoid.stcm.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "LootedStatTriggerMixin"
+    "LootedStatTriggerMixin",
+    "ManualPluginEmiMixin"
   ],
   "client": [
   ],
