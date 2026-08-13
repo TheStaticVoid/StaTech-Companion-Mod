@@ -42,7 +42,6 @@ public class PlayerTickHandler {
     }
 
     private static boolean isPlayerInSpace(Player player) {
-        return player.level().dimension().equals(ResourceKey.create(Registries.DIMENSION,
-                ResourceLocation.fromNamespaceAndPath(STCM.ID, "space")));
+        return player.level().dimension().equals(ResourceKey.create(Registries.DIMENSION, STCM.id("space")));
     }
 }
