@@ -1,6 +1,7 @@
 package dev.thestaticvoid.stcm.entity;
 
 import aztech.modern_industrialization.MIBlock;
+import dev.thestaticvoid.stcm.STCMConfig;
 import dev.thestaticvoid.stcm.world.STCMWorld;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -74,7 +75,9 @@ public class PrimedNuke extends Entity implements TraceableEntity {
     }
 
     protected void explode() {
-        //TODO: add can explode config option
+        if (!STCMConfig.CONFIG.nukeBlockDamage.get()) {
+            return;
+        }
         this.level().explode(
                 this,
                 DAMAGE_SOURCE,

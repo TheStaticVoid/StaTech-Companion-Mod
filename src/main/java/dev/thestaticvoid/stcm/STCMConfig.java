@@ -16,10 +16,12 @@ public final class STCMConfig {
 
     public final ModConfigSpec.ConfigValue<Integer> lootrMinXp;
     public final ModConfigSpec.ConfigValue<Integer> lootrMaxXp;
+    public final ModConfigSpec.ConfigValue<Boolean> nukeBlockDamage;
 
     private STCMConfig(ModConfigSpec.Builder builder){
         lootrMinXp = builder.comment("The minimum amount of XP gained from opening Lootr chests.").define("lootr_min_xp", 15);
         lootrMaxXp = builder.comment("The maximum amount of XP gained from opening Lootr chests.").define("lootr_max_xp", 20);
+        nukeBlockDamage = builder.comment("Should nuke explosions do block damage?").define("nuke_damage", true);
         builder.build();
     }
 }
