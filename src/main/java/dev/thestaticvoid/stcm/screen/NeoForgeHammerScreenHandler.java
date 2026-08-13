@@ -361,7 +361,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                     didSomething = true;
                 } else {
                     int toPull = delta;
-                    for (int i = 0; i < 36; ++i) {
+                    for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
                         Slot slot = this.slots.get(i);
                         if (ItemStack.isSameItemSameComponents(slot.getItem(), input.getItem())) {
                             int toMove = Math.min(toPull, input.getMaxStackSize(input.getItem()) - input.getItem().getCount());
@@ -394,7 +394,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                 int toPull = recipe.count();
                 input.set(matchingStack.copy());
                 input.getItem().setCount(0);
-                for (int i = 0; i < 36; ++i) {
+                for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
                     Slot slot = this.slots.get(i);
                     if (ItemStack.isSameItemSameComponents(slot.getItem(), matchingStack)) {
                         int toMove = Math.min(toPull, input.getMaxStackSize(input.getItem()) - input.getItem().getCount());
@@ -411,7 +411,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
             // Move hammer into gui
             if (recipe.hammerDamage() > 0 && !this.tool.hasItem()) {
-                for (int i = 0; i < 36; ++i) {
+                for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
                     Slot slot = this.slots.get(i);
                     if (slot.getItem().is(ForgeTool.TAG)) {
                         this.tool.set(slot.remove(1));
@@ -432,8 +432,8 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
             if (recipeIndex == -1) {
                 return;
             }
-            if (selectedRecipe.get() != recipeIndex) {
-                selectedRecipe.set(recipeIndex);
+            if (getSelectedRecipe() != recipeIndex) {
+                setSelectedRecipe(recipeIndex);
                 didSomething = true;
             }
             this.populateResult();

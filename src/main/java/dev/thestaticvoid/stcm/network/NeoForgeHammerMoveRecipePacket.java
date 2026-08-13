@@ -1,6 +1,5 @@
 package dev.thestaticvoid.stcm.network;
 
-import aztech.modern_industrialization.network.BasePacket;
 import aztech.modern_industrialization.network.MIStreamCodecs;
 import dev.thestaticvoid.stcm.screen.NeoForgeHammerScreenHandler;
 import io.netty.buffer.ByteBuf;

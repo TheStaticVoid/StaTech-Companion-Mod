@@ -1,18 +1,17 @@
 package dev.thestaticvoid.stcm.network;
 
 
-import aztech.modern_industrialization.network.BasePacket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import dev.thestaticvoid.stcm.STCM;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class STCMPacket {
     static final Map<Class<? extends BasePacket>, CustomPacketPayload.Type<?>> packetTypes = new HashMap<>();
