@@ -1,6 +1,7 @@
 {
   "textures": {
     "forge_hammer": "stcm:block/neoforge_hammer",
+    "forge_hammer_top": "stcm:block/neoforge_hammer_top",
     "particle" :  "stcm:block/neoforge_hammer"
   },
   "display": {
@@ -81,7 +82,7 @@
         "east": { "texture": "#forge_hammer", "uv": [ 1, 0, 15, 5 ] },
         "south": { "texture": "#forge_hammer", "uv": [ 1, 0, 15, 5 ] },
         "west": { "texture": "#forge_hammer", "uv": [ 1, 0, 15, 5 ] },
-        "up": { "texture": "#forge_hammer", "uv": [ 0, 0, 16, 16 ] },
+        "up": { "texture": "#forge_hammer_top", "uv": [ 0, 0, 16, 16 ] },
         "down": { "texture": "#forge_hammer", "uv": [ 0, 0, 16, 16 ] }
       }
     }
