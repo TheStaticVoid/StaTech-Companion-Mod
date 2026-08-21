@@ -29,7 +29,7 @@ public final class STCMConfig {
         prospectorHorizontalRange = builder.comment("The horizontal radius for the prospector to scan").define("prospector_x_radius", 16);
         prospectorVerticalRange = builder.comment("The vertical radius for the prospector to scan").define("prospector_y_radius", 256);
         prospectorMinDepositSize = builder.comment("The minimum amount of connected blocks to be considered a deposit").define("prospector_min_deposit_size", 32);
-        sampleProximityRange = builder.comment("The distance between ore samples of the same type that duplicate waypoint creation should be blocked in").define("prospector_proximity", 5);
+        sampleProximityRange = builder.comment("The distance between ore samples of the same type that duplicate waypoint creation should be blocked in").define("prospector_proximity", 16);
         builder.build();
     }
 }
