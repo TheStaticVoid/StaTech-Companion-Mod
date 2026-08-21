@@ -14,6 +14,10 @@ public class STCMItem {
             "space_shield", new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
     );
 
+    public static final DeferredItem<Item> PROSPECTOR_PICK = ITEMS.register(
+            "prospector_pick", () -> new ProspectorPick(new Item.Properties().durability(128).stacksTo(1))
+    );
+
     public static void init(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

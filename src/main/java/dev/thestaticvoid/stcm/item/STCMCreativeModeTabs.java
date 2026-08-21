@@ -18,6 +18,7 @@ public class STCMCreativeModeTabs {
                     .title(Component.translatable("itemGroup.stcm"))
                     .displayItems(((itemDisplayParameters, output) -> {
                         output.accept(STCMItem.SPACE_SHIELD);
+                        output.accept(STCMItem.PROSPECTOR_PICK);
                         output.accept(STCMBlock.NEOFORGE_HAMMER);
                     })).build());
 

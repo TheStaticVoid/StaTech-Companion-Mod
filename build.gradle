@@ -10,6 +10,34 @@ group = mod_group_id
 
 repositories {
     maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+
+    maven {
+        url "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+
+    // JourneyMap API releases are here
+    maven {
+        name = "JourneyMap (Public)"
+        url = "https://jm.gserv.me/repository/maven-public/"
+    }
+
+    maven {
         name "Modmaven"
         url "https://modmaven.dev"
         content {
@@ -25,11 +53,13 @@ repositories {
             includeGroup "mezz.jei"
         }
     }
-    // For Lootr
+
+    // For Lootr & JourneyMap
     maven {
         url = 'https://maven.blamejared.com'
         content {
             includeGroup 'noobanidus.mods.lootr'
+            includeGroup 'info.journeymap'
         }
     }
     // For EMI
@@ -140,10 +170,13 @@ dependencies {
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
     implementation "org.appliedenergistics:guideme:${guideme_version}"
     implementation "noobanidus.mods.lootr:lootr-neoforge:${lootr_version}"
+    compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
     localRuntimeOnly "dev.emi:emi-neoforge:${emi_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    compileOnly "info.journeymap:journeymap-api-neoforge:${journeymap_api_version}"
+    localRuntimeOnly "curse.maven:journeymap-32274:8658239"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -172,7 +205,10 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              emi_version                                : emi_version,
                              emi_version_range                          : emi_version_range,
                              jei_version                                : jei_version,
-                             jei_version_range                          : jei_version_range
+                             jei_version_range                          : jei_version_range,
+                             kubejs_version                             : kubejs_version,
+                             kubejs_version_range                       : kubejs_version_range,
+                             journeymap_api_version                     : journeymap_api_version
     ]
     inputs.properties replaceProperties
     expand replaceProperties

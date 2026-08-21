@@ -1,8 +1,17 @@
 {
   "block.stcm.neoforge_hammer": "NeoForge Hammer",
-  "event.player.stcm.space_suit_warning": "You should really have a Personal Shield Generator when in space...",
+  "chat.stcm.prospector_cooldown": "§cPlease wait %1$s §cseconds before prospecting again!",
+  "chat.stcm.prospector_deposit_info": "- %1$s: Approx. %2$s blocks away",
+  "chat.stcm.prospector_no_deposits": "§cNo deposits found in this area...",
+  "chat.stcm.prospector_success": "§aDeposits found nearby:",
+  "chat.stcm.waypoint_failed": "§cFailed to create waypoint",
+  "chat.stcm.waypoint_proximity_fail": "§cFailed to create waypoint - Too close to existing %1$s §cwaypoint",
+  "chat.stcm.waypoint_success": "§aCreated waypoint for %1$s §aat %2$s",
   "death.attack.stcm.nuke": "%1$s was erased",
+  "event.player.stcm.space_suit_warning": "You should really have a Personal Shield Generator when in space...",
   "gui.stcm.neoforge_hammer": "NeoForge Hammer",
   "item.stcm.space_shield": "Personal Shield Generator",
-  "itemGroup.stcm": "StaTech Companion Mod"
+  "item.stcm.prospector_pick": "Prospector Pick",
+  "itemGroup.stcm": "StaTech Companion Mod",
+  "tooltip.stcm.prospector_pick": "§eScans in a %1$s§ex%1$s§ex%2$s §earea below where you right-click\n§eto find ore deposits.\n\n§eRight-clicking on a surface sample will add a\n§eJourney Map waypoint"
 }
