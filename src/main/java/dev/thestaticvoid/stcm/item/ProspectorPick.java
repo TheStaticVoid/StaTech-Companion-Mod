@@ -1,5 +1,6 @@
 package dev.thestaticvoid.stcm.item;
 
+import dev.thestaticvoid.stcm.STCMConfig;
 import dev.thestaticvoid.stcm.client.compat.journeymap.STCMJMPlugin;
 import journeymap.api.v2.common.waypoint.Waypoint;
 import net.minecraft.ChatFormatting;
@@ -26,12 +27,8 @@ import net.neoforged.neoforge.common.Tags;
 import java.util.*;
 
 public class ProspectorPick extends Item {
-    private static Map<String, Integer> MaterialMap = new HashMap<>();
-    private final int PICK_COOLDOWN = 100;
-    private final int MIN_DEPOSIT_SIZE = 32;
-    private final int HORIZONTAL_RANGE = 16;
-    private final int VERTICAL_RANGE = 64;
-    private final int MAX_SCAN_SIZE = 64;
+    private static final Map<String, Integer> MaterialMap = new HashMap<>();
+    private final int PICK_COOLDOWN = 100; // 5 seconds
     private long lastPickUseTime = 0;
     private Level level;
     private Player player;
@@ -43,7 +40,6 @@ public class ProspectorPick extends Item {
         populateMaterialMap();
     }
 
-    // TODO refactor for readability
     @Override
     public InteractionResult useOn(UseOnContext context) {
         level = context.getLevel();
@@ -131,44 +127,36 @@ public class ProspectorPick extends Item {
         MaterialMap.put("zinc", ChatFormatting.getByName("gray").getColor());
     }
 
-    /*
-        TODO change this search to start at the center of the square and propagate search outwards so that when a deposit is found the block stored is closer to the player
-    */
     private void checkBlocksInArea(BlockPos startPosition, Level level) {
         oresFound.clear();
         depositsFound.clear();
 
-        int xStart = startPosition.getX() - HORIZONTAL_RANGE;
-        int xEnd = startPosition.getX() + HORIZONTAL_RANGE;
-        int yStart = startPosition.getY();
-        int yEnd = startPosition.getY() - VERTICAL_RANGE;
-        int zStart = startPosition.getZ() - HORIZONTAL_RANGE;
-        int zEnd = startPosition.getZ() + HORIZONTAL_RANGE;
+        // Thank you Mojang, very cool
+        Iterable<BlockPos> blockPosIterator = BlockPos.withinManhattan(
+                startPosition,
+                STCMConfig.CONFIG.prospectorHorizontalRange.get(),
+                STCMConfig.CONFIG.prospectorVerticalRange.get(),
+                STCMConfig.CONFIG.prospectorHorizontalRange.get());
+        for (BlockPos pos : blockPosIterator) {
+            BlockState state = level.getBlockState(pos);
 
-        for (int y = yStart; y < yEnd; y++) {
-            for (int x = xStart; x < xEnd; x++) {
-                for (int z = zStart; z < zEnd; z++) {
-                    BlockPos blockPos = new BlockPos(x, y, z);
-                    BlockState state = level.getBlockState(blockPos);
-
-                    if (state.is(Tags.Blocks.ORES)) {
-                        oresFound.put(blockPos, state);
-                    }
-                }
+            if (state.is(Tags.Blocks.ORES)) {
+                // The Iterator returns MutableBlockPos which was causing issues
+                this.oresFound.put(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), state);
             }
         }
 
-        Set<BlockState> depositsFound = new HashSet<>();
+        Set<BlockState> depositTypes = new HashSet<>();
         for (BlockPos pos : this.oresFound.keySet()) {
-            if (depositsFound.contains(this.oresFound.get(pos))) {
+            if (depositTypes.contains(this.oresFound.get(pos))) {
                 continue;
             }
 
             List<BlockPos> scannedPos = new ArrayList<>();
-            int size = countNeighbors(this.oresFound.get(pos).getBlock(), pos, MAX_SCAN_SIZE, scannedPos);
-            if (size >= MIN_DEPOSIT_SIZE) {
+            int size = countNeighbors(this.oresFound.get(pos).getBlock(), pos, STCMConfig.CONFIG.prospectorMinDepositSize.get(), scannedPos);
+            if (size >= STCMConfig.CONFIG.prospectorMinDepositSize.get()) {
                 this.depositsFound.add(new DepositInfo(pos, this.oresFound.get(pos), size));
-                depositsFound.add(this.oresFound.get(pos));
+                depositTypes.add(this.oresFound.get(pos));
             }
         }
     }
@@ -193,13 +181,13 @@ public class ProspectorPick extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        if (Screen.hasShiftDown()) {
-            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_pick", HORIZONTAL_RANGE, VERTICAL_RANGE));
+        if (!Screen.hasShiftDown()) {
+            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip"));
         } else {
-            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_pick", HORIZONTAL_RANGE, VERTICAL_RANGE));
+            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip_shift",
+                    STCMConfig.CONFIG.prospectorHorizontalRange.get(),
+                    STCMConfig.CONFIG.prospectorVerticalRange.get()));
         }
-
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
     private static class DepositInfo {
@@ -222,7 +210,7 @@ public class ProspectorPick extends Item {
         }
 
         public int getDistance(BlockPos pos) {
-            return pos.distManhattan(this.position);
+            return (int) Math.sqrt(pos.distSqr(this.position));
         }
 
         public void setPosition(BlockPos position) {

@@ -17,11 +17,17 @@ public final class STCMConfig {
     public final ModConfigSpec.ConfigValue<Integer> lootrMinXp;
     public final ModConfigSpec.ConfigValue<Integer> lootrMaxXp;
     public final ModConfigSpec.ConfigValue<Boolean> nukeBlockDamage;
+    public final ModConfigSpec.ConfigValue<Integer> prospectorHorizontalRange;
+    public final ModConfigSpec.ConfigValue<Integer> prospectorVerticalRange;
+    public final ModConfigSpec.ConfigValue<Integer> prospectorMinDepositSize;
 
     private STCMConfig(ModConfigSpec.Builder builder){
         lootrMinXp = builder.comment("The minimum amount of XP gained from opening Lootr chests.").define("lootr_min_xp", 15);
         lootrMaxXp = builder.comment("The maximum amount of XP gained from opening Lootr chests.").define("lootr_max_xp", 20);
         nukeBlockDamage = builder.comment("Should nuke explosions do block damage?").define("nuke_damage", true);
+        prospectorHorizontalRange = builder.comment("The horizontal radius for the prospector to scan").define("prospector_x_radius", 16);
+        prospectorVerticalRange = builder.comment("The vertical radius for the prospector to scan").define("prospector_y_radius", 256);
+        prospectorMinDepositSize = builder.comment("The minimum amount of connected blocks to be considered a deposit").define("prospector_min_deposit_size", 32);
         builder.build();
     }
 }
