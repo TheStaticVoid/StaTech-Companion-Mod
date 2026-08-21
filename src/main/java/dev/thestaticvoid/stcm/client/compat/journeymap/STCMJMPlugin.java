@@ -1,6 +1,7 @@
 package dev.thestaticvoid.stcm.client.compat.journeymap;
 
 import dev.thestaticvoid.stcm.STCM;
+import dev.thestaticvoid.stcm.STCMConfig;
 import journeymap.api.v2.client.IClientAPI;
 import journeymap.api.v2.client.IClientPlugin;
 import journeymap.api.v2.common.JourneyMapPlugin;
@@ -41,7 +42,7 @@ public class STCMJMPlugin implements IClientPlugin {
         this.jmAPI = jmClientApi;
     }
 
-    public static Waypoint createOreSampleWaypoint(BlockPos position, Level level, int color, String name) {
+    public static Waypoint createOreSampleWaypoint(BlockPos position, Level level, int color, String name, boolean showInWorld) {
         Waypoint waypoint = null;
         try {
             ResourceLocation icon = getBlockTextureResourceLocation(level.getBlockState(position));
@@ -52,6 +53,7 @@ public class STCMJMPlugin implements IClientPlugin {
             waypoint.setIconColor(0xffffff);
             waypoint.setBeaconColor(color);
             waypoint.setLabelColor(color);
+            waypoint.setShowInWorld(showInWorld);
             INSTANCE.jmAPI.addWaypoint(STCM.ID, waypoint);
         } catch (Throwable t) {
             STCM.LOGGER.error(t.getMessage(), t);
@@ -71,7 +73,7 @@ public class STCMJMPlugin implements IClientPlugin {
         boolean isSuccess = true;
         var waypoints = INSTANCE.jmAPI.getAllWaypoints(dimension);
         for (var waypoint : waypoints) {
-            if(waypoint.getBlockPos().closerThan(position, 3) && waypoint.getName().equals(name)) {
+            if(waypoint.getBlockPos().closerThan(position, STCMConfig.CONFIG.sampleProximityRange.get()) && waypoint.getName().equals(name)) {
                 isSuccess = false;
             }
         }

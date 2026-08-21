@@ -64,7 +64,7 @@ public class ProspectorPick extends Item {
                 String formattedPosition = String.format("(%s, %s, %s)", context.getClickedPos().getX(), context.getClickedPos().getY(), context.getClickedPos().getZ());
 
                 if (STCMJMPlugin.proximityCheck(context.getClickedPos(), level.dimension(), formattedMatName)) {
-                    Waypoint waypoint = STCMJMPlugin.createOreSampleWaypoint(context.getClickedPos(), level, color, formattedMatName);
+                    Waypoint waypoint = STCMJMPlugin.createOreSampleWaypoint(context.getClickedPos(), level, color, formattedMatName, player.isCrouching());
 
                     if (waypoint != null) {
                         player.displayClientMessage(Component.translatable("chat.stcm.waypoint_success", formattedMatName, formattedPosition), true);
