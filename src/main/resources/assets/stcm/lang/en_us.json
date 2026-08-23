@@ -7,6 +7,8 @@
   "chat.stcm.waypoint_failed": "§cFailed to create waypoint",
   "chat.stcm.waypoint_proximity_fail": "§cFailed to create waypoint - Too close to existing %1$s §cwaypoint",
   "chat.stcm.waypoint_success": "§aCreated waypoint for %1$s §aat %2$s",
+  "chat.stcm.waypoint_updated_show_in_world": "§aWaypoint updated to show in world",
+  "chat.stcm.waypoint_updated_hide_in_world": "§aWaypoint updated to hide in world",
   "death.attack.stcm.nuke": "%1$s was erased",
   "event.player.stcm.space_suit_warning": "You should really have a Personal Shield Generator when in space...",
   "gui.stcm.neoforge_hammer": "NeoForge Hammer",
@@ -14,5 +16,5 @@
   "item.stcm.prospector_pick": "Prospector Pick",
   "itemGroup.stcm": "StaTech Companion Mod",
   "tooltip.stcm.prospector_tooltip": "§7Hold [Shift] for more details",
-  "tooltip.stcm.prospector_tooltip_shift": "§eScans in a %1$s§ex%1$s§ex%2$s §earea around where you right-click to find ore deposits.\n\n§eRight-clicking on a surface sample will add a Journey Map waypoint\n§eCrouching while right-clicking will enable the in-world beacon for the waypoint"
+  "tooltip.stcm.prospector_tooltip_shift": "§eScans in a %1$s§ex%1$s§ex%2$s §earea around where you right-click to find ore deposits.\n\n§eRight-clicking on a surface sample will add a Journey Map waypoint\n§eCrouching while right-clicking will toggle the in-world beacon for the waypoint"
 }

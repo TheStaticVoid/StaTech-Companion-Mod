@@ -75,7 +75,20 @@ public class ProspectorPick extends Item {
                         return InteractionResult.CONSUME;
                     }
                 } else {
-                    player.displayClientMessage(Component.translatable("chat.stcm.waypoint_proximity_fail", formattedMatName), true);
+                    if (player.isCrouching()) {
+                        if (STCMJMPlugin.isShownInWorld(context.getClickedPos(), level.dimension(), formattedMatName)) {
+                            STCMJMPlugin.showInWorld(context.getClickedPos(), level.dimension(), formattedMatName, false);
+                            player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_hide_in_world"), true);
+
+                        } else {
+                            STCMJMPlugin.showInWorld(context.getClickedPos(), level.dimension(), formattedMatName, true);
+                            player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_show_in_world"), true);
+                        }
+                        level.playSound(player, context.getClickedPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return InteractionResult.SUCCESS;
+                    } else {
+                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_proximity_fail", formattedMatName), true);
+                    }
                 }
             }
         } else if (!level.isClientSide() && !player.isCrouching()) {
