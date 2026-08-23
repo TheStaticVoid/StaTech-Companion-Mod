@@ -15,6 +15,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
@@ -25,11 +26,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     public static final int SLOT_INPUT = 0;
     public static final int SLOT_TOOL = 1;
     public static final int SLOT_OUTPUT = 2;
-    public static final int SLOT_COUNT = 3;
-    private static final int INV_SLOT_START = 3;
-    private static final int INV_SLOT_END = 30;
-    private static final int USE_ROW_SLOT_START = 30;
-    private static final int USE_ROW_SLOT_END = 39;
     private final ContainerData data;
     private final Container container;
     private final Level level;
@@ -59,6 +55,9 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         this.availableRecipes = new ArrayList<>();
         this.selectedRecipe = DataSlot.standalone();
         this.selectedRecipe.set(this.data.get(0));
+
+        this.addPlayerInventory(playerInventory);
+        this.addPlayerHotbar(playerInventory);
 
         this.input = this.addSlot(new Slot(container, SLOT_INPUT, 34, 33) {
             @Override
@@ -119,9 +118,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                 }
             }
         });
-
-        this.addPlayerInventory(playerInventory);
-        this.addPlayerHotbar(playerInventory);
 
         this.addDataSlot(selectedRecipe);
         this.addDataSlots(containerData);
@@ -270,42 +266,46 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot) this.slots.get(index);
-        if (slot != null && slot.hasItem()) {
-            ItemStack itemStack1 = slot.getItem();
-            itemStack = itemStack1.copy();
+        Slot slot = this.slots.get(index);
+        if (slot.hasItem()) {
+            ItemStack itemStack2 = slot.getItem();
+            Item item = itemStack2.getItem();
+            itemStack = itemStack2.copy();
 
-            if (index == SLOT_OUTPUT) {
-                if (!this.moveItemStackTo(itemStack1, INV_SLOT_START, USE_ROW_SLOT_END, true)) {
+            if (index == 38) {
+                item.onCraftedBy(itemStack2, player.level(), player);
+                if (!this.moveItemStackTo(itemStack2, 0, 36, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onQuickCraft(itemStack1, itemStack);
-            } else if (index != SLOT_INPUT && index != SLOT_TOOL) {
-                if (itemStack1.is(ForgeTool.TAG)) {
-                    if (!this.moveItemStackTo(itemStack1, SLOT_TOOL, SLOT_TOOL + 1, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else {
-                    if (!this.moveItemStackTo(itemStack1, SLOT_INPUT, SLOT_INPUT + 1, false)) {
+                slot.onQuickCraft(itemStack2, itemStack);
+            } else if (index == 37 || index == 36) {
+                if (!this.moveItemStackTo(itemStack2, 0, 36, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (index < 36) {
+                if (!this.moveItemStackTo(itemStack2, 36, 38, true)) {
+                    if (index < 27) {
+                        if (!this.moveItemStackTo(itemStack2, 27, 36, false)) {
+                            return ItemStack.EMPTY;
+                        }
+                    } else {
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (!this.moveItemStackTo(itemStack1, INV_SLOT_START, USE_ROW_SLOT_END, false)) {
+            }
+
+            if (itemStack2.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            }
+
+            slot.setChanged();
+            if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemStack1.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            if (itemStack1.getCount() == itemStack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(player, itemStack1);
+            slot.onTake(player, itemStack2);
+            this.broadcastChanges();
         }
 
         return itemStack;
@@ -340,6 +340,11 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     }
 
     public void moveRecipe(ResourceLocation recipeId, int fillAction, int amount) {
+        // Kind of a hack, but move the input/tool slots back to the players
+        // before running the rest of the logic
+        quickMoveStack(player, 36);
+        quickMoveStack(player, 37);
+
         var recipeHolder = this.level.getRecipeManager().getAllRecipesFor(MIRegistries.FORGE_HAMMER_RECIPE_TYPE.get()).stream()
                 .filter(r -> r.id().equals(recipeId)).findFirst().orElse(null);
         if (recipeHolder == null) {
@@ -361,7 +366,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                     didSomething = true;
                 } else {
                     int toPull = delta;
-                    for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
+                    for (int i = 0; i < 36; ++i) {
                         Slot slot = this.slots.get(i);
                         if (ItemStack.isSameItemSameComponents(slot.getItem(), input.getItem())) {
                             int toMove = Math.min(toPull, input.getMaxStackSize(input.getItem()) - input.getItem().getCount());
@@ -394,7 +399,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                 int toPull = recipe.count();
                 input.set(matchingStack.copy());
                 input.getItem().setCount(0);
-                for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
+                for (int i = 0; i < 36; ++i) {
                     Slot slot = this.slots.get(i);
                     if (ItemStack.isSameItemSameComponents(slot.getItem(), matchingStack)) {
                         int toMove = Math.min(toPull, input.getMaxStackSize(input.getItem()) - input.getItem().getCount());
@@ -411,7 +416,7 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
 
             // Move hammer into gui
             if (recipe.hammerDamage() > 0 && !this.tool.hasItem()) {
-                for (int i = INV_SLOT_START; i < USE_ROW_SLOT_END; ++i) {
+                for (int i = 0; i < 36; ++i) {
                     Slot slot = this.slots.get(i);
                     if (slot.getItem().is(ForgeTool.TAG)) {
                         this.tool.set(slot.remove(1));
