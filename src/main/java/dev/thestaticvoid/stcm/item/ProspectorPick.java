@@ -2,6 +2,7 @@ package dev.thestaticvoid.stcm.item;
 
 import dev.thestaticvoid.stcm.STCMConfig;
 import dev.thestaticvoid.stcm.client.compat.journeymap.STCMJMPlugin;
+import dev.thestaticvoid.stcm.data.MaterialLoader;
 import journeymap.api.v2.common.waypoint.Waypoint;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -37,7 +38,6 @@ public class ProspectorPick extends Item {
 
     public ProspectorPick(Properties properties) {
         super(properties);
-        populateMaterialMap();
     }
 
     @Override
@@ -55,10 +55,7 @@ public class ProspectorPick extends Item {
         if (id.getNamespace().equals("kubejs") && id.getPath().contains("ore_sample")) {
             if (level.isClientSide()) {
                 String material = id.getPath().substring(0, id.getPath().indexOf("_ore"));
-                int color = ChatFormatting.getByName("white").getColor();
-                if (MaterialMap.containsKey(material)) {
-                    color = MaterialMap.get(material);
-                }
+                int color = ChatFormatting.getByName(MaterialLoader.get(material)).getColor();
 
                 String formattedMatName = material.toUpperCase().charAt(0) + material.substring(1);
                 String formattedPosition = String.format("(%s, %s, %s)", context.getClickedPos().getX(), context.getClickedPos().getY(), context.getClickedPos().getZ());
@@ -114,30 +111,6 @@ public class ProspectorPick extends Item {
             }
         }
         return super.useOn(context);
-    }
-
-    // This being hardcoded is pretty bad but idk i'm lazy
-    private void populateMaterialMap() {
-        MaterialMap.put("bauxite", ChatFormatting.getByName("gold").getColor());
-        MaterialMap.put("salt", ChatFormatting.getByName("gray").getColor());
-        MaterialMap.put("titanium", ChatFormatting.getByName("light_purple").getColor());
-        MaterialMap.put("uranium", ChatFormatting.getByName("green").getColor());
-        MaterialMap.put("lead", ChatFormatting.getByName("dark_blue").getColor());
-        MaterialMap.put("nickel", ChatFormatting.getByName("white").getColor());
-        MaterialMap.put("platinum", ChatFormatting.getByName("white").getColor());
-        MaterialMap.put("tin", ChatFormatting.getByName("gray").getColor());
-        MaterialMap.put("coal", ChatFormatting.getByName("black").getColor());
-        MaterialMap.put("copper", ChatFormatting.getByName("red").getColor());
-        MaterialMap.put("diamond", ChatFormatting.getByName("aqua").getColor());
-        MaterialMap.put("emerald", ChatFormatting.getByName("green").getColor());
-        MaterialMap.put("gold", ChatFormatting.getByName("yellow").getColor());
-        MaterialMap.put("iron", ChatFormatting.getByName("gray").getColor());
-        MaterialMap.put("lapis", ChatFormatting.getByName("blue").getColor());
-        MaterialMap.put("nether_gold", ChatFormatting.getByName("yellow").getColor());
-        MaterialMap.put("nether_quartz", ChatFormatting.getByName("gray").getColor());
-        MaterialMap.put("quartz", ChatFormatting.getByName("gray").getColor());
-        MaterialMap.put("redstone", ChatFormatting.getByName("dark_red").getColor());
-        MaterialMap.put("zinc", ChatFormatting.getByName("gray").getColor());
     }
 
     private void checkBlocksInArea(BlockPos startPosition, Level level) {
