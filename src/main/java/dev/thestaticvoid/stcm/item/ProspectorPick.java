@@ -41,76 +41,104 @@ public class ProspectorPick extends Item {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (!Screen.hasShiftDown()) {
+            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip"));
+        } else {
+            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip_shift",
+                    STCMConfig.CONFIG.prospectorHorizontalRange.get(),
+                    STCMConfig.CONFIG.prospectorVerticalRange.get()));
+        }
+    }
+
+    @Override
     public InteractionResult useOn(UseOnContext context) {
         level = context.getLevel();
         player = context.getPlayer();
 
-        if (player == null) {
-            return super.useOn(context);
-        }
-
-        Block targetedBlock = level.getBlockState(context.getClickedPos()).getBlock();
-        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(targetedBlock);
-
-        if (id.getNamespace().equals("kubejs") && id.getPath().contains("ore_sample")) {
-            if (level.isClientSide()) {
-                String material = id.getPath().substring(0, id.getPath().indexOf("_ore"));
-                int color = ChatFormatting.getByName(MaterialLoader.get(material)).getColor();
-
-                String formattedMatName = material.toUpperCase().charAt(0) + material.substring(1);
-                String formattedPosition = String.format("(%s, %s, %s)", context.getClickedPos().getX(), context.getClickedPos().getY(), context.getClickedPos().getZ());
-
-                if (STCMJMPlugin.proximityCheck(context.getClickedPos(), level.dimension(), formattedMatName)) {
-                    Waypoint waypoint = STCMJMPlugin.createOreSampleWaypoint(context.getClickedPos(), level, color, formattedMatName, player.isCrouching());
-
-                    if (waypoint != null) {
-                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_success", formattedMatName, formattedPosition), true);
-                        level.playSound(player, context.getClickedPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return InteractionResult.SUCCESS;
-                    } else {
-                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_failed"), true);
-                        return InteractionResult.CONSUME;
-                    }
-                } else {
-                    if (player.isCrouching()) {
-                        if (STCMJMPlugin.isShownInWorld(context.getClickedPos(), level.dimension(), formattedMatName)) {
-                            STCMJMPlugin.showInWorld(context.getClickedPos(), level.dimension(), formattedMatName, false);
-                            player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_hide_in_world"), true);
-
-                        } else {
-                            STCMJMPlugin.showInWorld(context.getClickedPos(), level.dimension(), formattedMatName, true);
-                            player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_show_in_world"), true);
-                        }
-                        level.playSound(player, context.getClickedPos(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return InteractionResult.SUCCESS;
-                    } else {
-                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_proximity_fail", formattedMatName), true);
-                    }
-                }
-            }
-        } else if (!level.isClientSide() && !player.isCrouching()) {
-            if (level.getGameTime() > lastPickUseTime + PICK_COOLDOWN) {
-                lastPickUseTime = level.getGameTime();
-                checkBlocksInArea(context.getClickedPos(), level);
-
-                if (!this.depositsFound.isEmpty()) {
-                    player.sendSystemMessage(Component.translatable("chat.stcm.prospector_success"));
-                    for (DepositInfo info : this.depositsFound) {
-                        player.sendSystemMessage(Component.translatable("chat.stcm.prospector_deposit_info", info.getBlockState().getBlock().getName(), info.getDistance(context.getClickedPos())));
-                    }
-                } else {
-                    player.sendSystemMessage(Component.translatable("chat.stcm.prospector_no_deposits"));
-                }
-
-                level.playSound(null, context.getClickedPos(), SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0f, 1.0f);
-                context.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.getHand()));
-                return InteractionResult.SUCCESS;
-            } else {
-                player.displayClientMessage(Component.translatable("chat.stcm.prospector_cooldown", ((lastPickUseTime + PICK_COOLDOWN - level.getGameTime()) / 20.0)), true);
-                return super.useOn(context);
+        if (level.isClientSide()) {
+            return doSampleInteraction(level, player, context);
+        } else {
+            if (!player.isCrouching()) {
+                return doDepositScan(level, player, context);
             }
         }
         return super.useOn(context);
+    }
+
+    private InteractionResult doSampleInteraction(Level level, Player player, UseOnContext context) {
+        BlockPos blockPos = context.getClickedPos();
+        Block targetedBlock = level.getBlockState(blockPos).getBlock();
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(targetedBlock);
+
+        if (id.getNamespace().equals("kubejs") && id.getPath().contains("ore_sample")) {
+            String material = id.getPath().substring(0, id.getPath().indexOf("_ore"));
+            ChatFormatting waypointColor = ChatFormatting.getByName(MaterialLoader.get(material));
+            if (waypointColor == null) {
+                waypointColor = ChatFormatting.WHITE;
+            }
+
+            String formattedMatName = material.toUpperCase().charAt(0) + material.substring(1);
+            String formattedPosition = String.format("(%s, %s, %s)", blockPos.getX(), blockPos.getY(), blockPos.getZ());
+
+            // Check to make sure there are no other waypoints of the same material type in the vicinity
+            if (STCMJMPlugin.proximityCheck(blockPos, level.dimension(), formattedMatName)) {
+                Waypoint waypoint = STCMJMPlugin.createOreSampleWaypoint(
+                        blockPos,
+                        level,
+                        waypointColor.getColor(),
+                        formattedMatName,
+                        player.isCrouching());
+
+                if (waypoint != null) {
+                    player.displayClientMessage(Component.translatable("chat.stcm.waypoint_success", formattedMatName, formattedPosition), true);
+                    return InteractionResult.SUCCESS;
+                } else {
+                    player.displayClientMessage(Component.translatable("chat.stcm.waypoint_failed"), true);
+                    return InteractionResult.CONSUME;
+                }
+            } else {
+                // Otherwise need to check if it's an inworld waypoint toggle
+                if (player.isCrouching()) {
+                    if (STCMJMPlugin.isShownInWorld(blockPos, level.dimension(), formattedMatName)) {
+                        STCMJMPlugin.showInWorld(blockPos, level.dimension(), formattedMatName, false);
+                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_hide_in_world"), true);
+                    } else {
+                        STCMJMPlugin.showInWorld(blockPos, level.dimension(), formattedMatName, true);
+                        player.displayClientMessage(Component.translatable("chat.stcm.waypoint_updated_show_in_world"), true);
+                    }
+                    level.playSound(player, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    return InteractionResult.SUCCESS;
+                } else {
+                    player.displayClientMessage(Component.translatable("chat.stcm.waypoint_proximity_fail", formattedMatName), true);
+                }
+            }
+        }
+        return super.useOn(context);
+    }
+
+    private InteractionResult doDepositScan(Level level, Player player, UseOnContext context) {
+        BlockPos blockPos = context.getClickedPos();
+        if (level.getGameTime() > lastPickUseTime + PICK_COOLDOWN) {
+            lastPickUseTime = level.getGameTime();
+            checkBlocksInArea(blockPos, level);
+
+            if (!this.depositsFound.isEmpty()) {
+                player.sendSystemMessage(Component.translatable("chat.stcm.prospector_success"));
+                for (DepositInfo info : this.depositsFound) {
+                    player.sendSystemMessage(Component.translatable("chat.stcm.prospector_deposit_info", info.getBlockState().getBlock().getName(), info.getDistance(blockPos)));
+                }
+            } else {
+                player.sendSystemMessage(Component.translatable("chat.stcm.prospector_no_deposits"));
+            }
+
+            level.playSound(null, blockPos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+            context.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.getHand()));
+            return InteractionResult.SUCCESS;
+        } else {
+            player.displayClientMessage(Component.translatable("chat.stcm.prospector_cooldown", ((lastPickUseTime + PICK_COOLDOWN - level.getGameTime()) / 20.0)), true);
+            return super.useOn(context);
+        }
     }
 
     private void checkBlocksInArea(BlockPos startPosition, Level level) {
@@ -163,17 +191,6 @@ public class ProspectorPick extends Item {
         }
 
         return count;
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        if (!Screen.hasShiftDown()) {
-            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip"));
-        } else {
-            tooltipComponents.add(Component.translatable("tooltip.stcm.prospector_tooltip_shift",
-                    STCMConfig.CONFIG.prospectorHorizontalRange.get(),
-                    STCMConfig.CONFIG.prospectorVerticalRange.get()));
-        }
     }
 
     private static class DepositInfo {
