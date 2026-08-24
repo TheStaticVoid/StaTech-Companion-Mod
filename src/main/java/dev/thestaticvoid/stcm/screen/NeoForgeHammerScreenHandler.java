@@ -72,6 +72,11 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
                 super.setChanged();
                 NeoForgeHammerScreenHandler.this.slotsChanged(this.container);
             }
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.is(ForgeTool.TAG);
+            }
         });
         this.output = this.addSlot(new Slot(container, SLOT_OUTPUT, 143, 33) {
             private int removeCount = 0;
@@ -159,6 +164,15 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         return id >= 0 && id < this.availableRecipes.size();
     }
 
+    @Override
+    public void slotsChanged(Container container) {
+        if (!ItemStack.matches(this.inputStackCache, input.getItem()) || !ItemStack.matches(this.toolStackCache, tool.getItem())) {
+            updateStatus();
+        }
+
+        super.slotsChanged(container);
+    }
+
     public void updateStatus() {
         this.inputStackCache = input.getItem().copy();
         this.toolStackCache = tool.getItem().copy();
@@ -219,6 +233,17 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         this.broadcastChanges();
     }
 
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        this.forceUpdate();
+
+        if (this.isInBounds(id)) {
+            this.setSelectedRecipe(id);
+            this.populateResult();
+        }
+        return true;
+    }
+
     private void onCraft() {
         // Sometimes available recipes is empty and needs to be refreshed
         if (!this.isInBounds(this.getSelectedRecipe())) {
@@ -235,7 +260,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
             if (tool.getItem().getDamageValue() >= tool.getItem().getMaxDamage()) {
                 tool.set(ItemStack.EMPTY);
 
-
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
 
@@ -246,21 +270,10 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
         this.updateStatus();
     }
 
-    private void forceUpdate() {
-        // Some cases were the client opens the menu and available recipes are not synced properly
-        // There's probably a less laggy way to do this, but be my guest to fix it.
-        var cachedSelection = this.getSelectedRecipe();
-        this.updateStatus();
-        this.setSelectedRecipe(cachedSelection);
-    }
-
     @Override
-    public void slotsChanged(Container container) {
-        if (!ItemStack.matches(this.inputStackCache, input.getItem()) || !ItemStack.matches(this.toolStackCache, tool.getItem())) {
-            updateStatus();
-        }
-
-        super.slotsChanged(container);
+    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
+        // Treat double-clicks on the output as two normal clicks instead of trying to "pick all"
+        return slot.container != this.output.container && super.canTakeItemForPickAll(stack, slot);
     }
 
     @Override
@@ -271,7 +284,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
             ItemStack itemStack2 = slot.getItem();
             Item item = itemStack2.getItem();
             itemStack = itemStack2.copy();
-
             if (index == 38) {
                 item.onCraftedBy(itemStack2, player.level(), player);
                 if (!this.moveItemStackTo(itemStack2, 0, 36, true)) {
@@ -314,23 +326,6 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return this.container.stillValid(player);
-    }
-
-    @Override
-    public boolean clickMenuButton(Player player, int id) {
-        this.forceUpdate();
-
-        if (this.isInBounds(id)) {
-            this.setSelectedRecipe(id);
-            this.populateResult();
-        }
-        return true;
-    }
-
-    @Override
-    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
-        // Treat double-clicks on the output as two normal clicks instead of trying to "pick all"
-        return slot.container != this.output.container && super.canTakeItemForPickAll(stack, slot);
     }
 
     @Override
@@ -459,5 +454,13 @@ public class NeoForgeHammerScreenHandler extends AbstractContainerMenu {
             }
             firstPass = false;
         }
+    }
+
+    private void forceUpdate() {
+        // Some cases were the client opens the menu and available recipes are not synced properly
+        // There's probably a less laggy way to do this, but be my guest to fix it.
+        var cachedSelection = this.getSelectedRecipe();
+        this.updateStatus();
+        this.setSelectedRecipe(cachedSelection);
     }
 }

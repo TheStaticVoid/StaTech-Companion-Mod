@@ -18,13 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.*;
 
 public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
-    private static final int SLOT_INPUT = 0;
-    private static final int SLOT_TOOL = 1;
-    private static final int SLOT_OUTPUT = 2;
-
     private NonNullList<ItemStack> items;
     private final ContainerData dataAccess;
-
     int currentRecipe = -1;
 
     public NeoForgeHammerBlockEntity(BlockPos pos, BlockState blockState) {
@@ -51,30 +46,6 @@ public class NeoForgeHammerBlockEntity extends BaseContainerBlockEntity {
                 return 1;
             }
         };
-    }
-
-    public void setItem(int index, ItemStack stack) {
-        ItemStack itemStack = (ItemStack) this.items.get(index);
-        boolean flag = !stack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, stack);
-        this.items.set(index, stack);
-        stack.limitSize(this.getMaxStackSize(stack));
-//        if (index == SLOT_INPUT && !flag) {
-//            this.setChanged();
-//        }
-
-        if ((index == SLOT_INPUT || index == SLOT_TOOL) && !flag) {
-            this.setChanged();
-        }
-    }
-
-    public boolean canPlaceItem(int index, ItemStack stack) {
-        if (index == SLOT_OUTPUT) {
-            return false;
-        } else if (index == SLOT_TOOL) {
-            return stack.is(ForgeTool.TAG);
-        } else {
-            return true;
-        }
     }
 
     @Override

@@ -176,7 +176,9 @@ dependencies {
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     compileOnly "info.journeymap:journeymap-api-neoforge:${journeymap_api_version}"
-    localRuntimeOnly "curse.maven:journeymap-32274:8658239"
+    // localRuntimeOnly "curse.maven:journeymap-32274:8658239"
+    // implementation "curse.maven:inventory-essentials-368825:8697019"
+    // implementation "curse.maven:balm-531761:8645517"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
