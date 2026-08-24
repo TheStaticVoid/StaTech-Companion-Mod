@@ -1,6 +1,5 @@
 package dev.thestaticvoid.stcm.item;
 
-import dev.thestaticvoid.stcm.STCM;
 import dev.thestaticvoid.stcm.STCMConfig;
 import dev.thestaticvoid.stcm.client.compat.journeymap.STCMJMPlugin;
 import dev.thestaticvoid.stcm.data.MaterialLoader;
