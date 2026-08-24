@@ -32,9 +32,7 @@ public class ProspectorPick extends Item {
     private final int PICK_COOLDOWN = 100; // 5 seconds
     private long lastPickUseTime = 0;
     private Level level;
-    private Player player;
-    private Map<BlockPos, BlockState> oresFound = new HashMap<>();
-    private List<DepositInfo> depositsFound = new ArrayList<>();
+    private final Map<BlockState, BlockPos> depositsFound = new HashMap<>();
 
     public ProspectorPick(Properties properties) {
         super(properties);
@@ -54,7 +52,7 @@ public class ProspectorPick extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         level = context.getLevel();
-        player = context.getPlayer();
+        Player player = context.getPlayer();
 
         if (level.isClientSide()) {
             return doSampleInteraction(level, player, context);
@@ -78,7 +76,7 @@ public class ProspectorPick extends Item {
                 waypointColor = ChatFormatting.WHITE;
             }
 
-            String formattedMatName = material.toUpperCase().charAt(0) + material.substring(1);
+            String formattedMatName = capitalizeFirstLetter(material);
             String formattedPosition = String.format("(%s, %s, %s)", blockPos.getX(), blockPos.getY(), blockPos.getZ());
 
             // Check to make sure there are no other waypoints of the same material type in the vicinity
@@ -125,8 +123,20 @@ public class ProspectorPick extends Item {
 
             if (!this.depositsFound.isEmpty()) {
                 player.sendSystemMessage(Component.translatable("chat.stcm.prospector_success"));
-                for (DepositInfo info : this.depositsFound) {
-                    player.sendSystemMessage(Component.translatable("chat.stcm.prospector_deposit_info", info.getBlockState().getBlock().getName(), info.getDistance(blockPos)));
+
+                Map<String, BlockPos> oreNameMap = new HashMap<>();
+                this.depositsFound.forEach((state, pos) -> {
+                    String oreName = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+                    if (oreName.contains("deepslate_")) {
+                        oreName = oreName.substring("deepslate_".length());
+                    }
+                    oreNameMap.put(capitalizeFirstLetter((oreName.substring(0, oreName.indexOf("_ore"))).replace("_", " ")), pos);
+                });
+
+                SortedSet<String> sortedKeys = new TreeSet<>(oreNameMap.keySet());
+                for (String key : sortedKeys) {
+                    int distance = (int) Math.sqrt(oreNameMap.get(key).distSqr(blockPos));
+                    player.sendSystemMessage(Component.translatable("chat.stcm.prospector_deposit_info", key, distance));
                 }
             } else {
                 player.sendSystemMessage(Component.translatable("chat.stcm.prospector_no_deposits"));
@@ -142,8 +152,8 @@ public class ProspectorPick extends Item {
     }
 
     private void checkBlocksInArea(BlockPos startPosition, Level level) {
-        oresFound.clear();
-        depositsFound.clear();
+        Map<BlockPos, BlockState> oresFound = new HashMap<>();
+        this.depositsFound.clear();
 
         // Thank you Mojang, very cool
         Iterable<BlockPos> blockPosIterator = BlockPos.withinManhattan(
@@ -156,26 +166,43 @@ public class ProspectorPick extends Item {
 
             if (state.is(Tags.Blocks.ORES)) {
                 // The Iterator returns MutableBlockPos which was causing issues
-                this.oresFound.put(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), state);
+                oresFound.put(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), state);
             }
         }
 
         Set<BlockState> depositTypes = new HashSet<>();
-        for (BlockPos pos : this.oresFound.keySet()) {
-            if (depositTypes.contains(this.oresFound.get(pos))) {
-                continue;
+        oresFound.forEach((pos, state) -> {
+            ResourceLocation temporary = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+            Block ore = null, deepslate = null;
+            BlockState defaultState = null;
+            if (temporary.getPath().contains("deepslate_")) {
+                String formattedPath = temporary.getPath().substring("deepslate_".length());
+                if (BuiltInRegistries.BLOCK.containsKey(ResourceLocation.fromNamespaceAndPath(temporary.getNamespace(), formattedPath))) {
+                    ore = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(temporary.getNamespace(), formattedPath));
+                }
+                deepslate = state.getBlock();
+                defaultState = ore == null ? state : ore.defaultBlockState();
+            } else {
+                String formattedPath = "deepslate_" + temporary.getPath();
+                if (BuiltInRegistries.BLOCK.containsKey(ResourceLocation.fromNamespaceAndPath(temporary.getNamespace(), formattedPath))) {
+                    deepslate = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(temporary.getNamespace(), formattedPath));
+                }
+                ore = state.getBlock();
+                defaultState = state;
             }
 
-            List<BlockPos> scannedPos = new ArrayList<>();
-            int size = countNeighbors(this.oresFound.get(pos).getBlock(), pos, STCMConfig.CONFIG.prospectorMinDepositSize.get(), scannedPos);
-            if (size >= STCMConfig.CONFIG.prospectorMinDepositSize.get()) {
-                this.depositsFound.add(new DepositInfo(pos, this.oresFound.get(pos), size));
-                depositTypes.add(this.oresFound.get(pos));
+            if (!depositTypes.contains(defaultState)) {
+                List<BlockPos> scannedPos = new ArrayList<>();
+                int size = countNeighbors(ore, deepslate, pos, STCMConfig.CONFIG.prospectorMinDepositSize.get(), scannedPos);
+                if (size >= STCMConfig.CONFIG.prospectorMinDepositSize.get()) {
+                    this.depositsFound.put(defaultState, pos);
+                    depositTypes.add(defaultState);
+                }
             }
-        }
+        });
     }
 
-    private int countNeighbors(Block blockType, BlockPos pos, int maxCount, List<BlockPos> scannedPos) {
+    private int countNeighbors(Block oreBlock, Block deepslateBlock, BlockPos pos, int maxCount, List<BlockPos> scannedPos) {
         int count = 1;
         scannedPos.add(pos);
 
@@ -185,55 +212,23 @@ public class ProspectorPick extends Item {
             }
 
             BlockPos adjPos = pos.relative(direction);
-            if (this.level.getBlockState(adjPos).is(blockType) && !scannedPos.contains(adjPos)) {
-                count += this.countNeighbors(blockType, adjPos, maxCount - count, scannedPos);
+            if ((this.level.getBlockState(adjPos).is(oreBlock) || this.level.getBlockState(adjPos).is(deepslateBlock)) && !scannedPos.contains(adjPos)) {
+                count += this.countNeighbors(oreBlock, deepslateBlock, adjPos, maxCount - count, scannedPos);
             }
         }
 
         return count;
     }
 
-    private static class DepositInfo {
-        private BlockPos position;
-        private BlockState blockState;
-        private int count;
-
-        public DepositInfo(BlockPos position, BlockState blockState, int count) {
-            this.position = position;
-            this.blockState = blockState;
-            this.count = count;
+    private String  capitalizeFirstLetter(String word) {
+        String[] separated = word.split(" ");
+        StringBuilder formatted = new StringBuilder();
+        for (int i = 0; i < separated.length; i++) {
+            if (separated[i].length() > 1) {
+                formatted.append(separated[i].toUpperCase().charAt(0)).append(separated[i].substring(1)).append(" ");
+            }
         }
 
-        public BlockPos getPosition() {
-            return position;
-        }
-
-        public String getPositionString() {
-            return String.format("(%s, %s, %s)", this.position.getX(), this.position.getY(), this.position.getZ());
-        }
-
-        public int getDistance(BlockPos pos) {
-            return (int) Math.sqrt(pos.distSqr(this.position));
-        }
-
-        public void setPosition(BlockPos position) {
-            this.position = position;
-        }
-
-        public BlockState getBlockState() {
-            return blockState;
-        }
-
-        public void setBlockState(BlockState blockState) {
-            this.blockState = blockState;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
+        return formatted.toString().trim();
     }
 }
