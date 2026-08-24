@@ -5,6 +5,7 @@
   "chat.stcm.prospector_no_deposits": "§cNo deposits found in this area...",
   "chat.stcm.prospector_success": "§aDeposits found nearby:",
   "chat.stcm.waypoint_failed": "§cFailed to create waypoint",
+  "chat.stcm.waypoint_failed_player_placed": "§cFailed to create waypoint - Sample is not naturally generated",
   "chat.stcm.waypoint_proximity_fail": "§cFailed to create waypoint - Too close to existing %1$s §cwaypoint",
   "chat.stcm.waypoint_success": "§aCreated waypoint for %1$s §aat %2$s",
   "chat.stcm.waypoint_updated_show_in_world": "§aWaypoint updated to show in world",
