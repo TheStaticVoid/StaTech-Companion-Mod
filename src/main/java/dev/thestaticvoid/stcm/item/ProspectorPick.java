@@ -107,6 +107,7 @@ public class ProspectorPick extends Item {
 
             if (waypoint != null) {
                 player.displayClientMessage(Component.translatable("chat.stcm.waypoint_success", formattedMatName, formattedPosition), true);
+                level.playSound(player, blockPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 1.0F, 1.0F);
                 return InteractionResult.SUCCESS;
             } else {
                 player.displayClientMessage(Component.translatable("chat.stcm.waypoint_failed"), true);
