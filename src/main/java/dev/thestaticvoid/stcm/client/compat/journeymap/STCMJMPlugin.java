@@ -54,6 +54,7 @@ public class STCMJMPlugin implements IClientPlugin {
             waypoint.setBeaconColor(color);
             waypoint.setLabelColor(color);
             waypoint.setShowInWorld(showInWorld);
+            waypoint.setIconTextureSize(16, 16);
             INSTANCE.jmAPI.addWaypoint(STCM.ID, waypoint);
 
             WaypointGroup wg = getModWaypointGroup();
