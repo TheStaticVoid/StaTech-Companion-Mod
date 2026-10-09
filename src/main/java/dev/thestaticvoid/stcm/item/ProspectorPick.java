@@ -1,5 +1,6 @@
 package dev.thestaticvoid.stcm.item;
 
+import dev.thestaticvoid.stcm.STCM;
 import dev.thestaticvoid.stcm.STCMComponents;
 import dev.thestaticvoid.stcm.STCMConfig;
 import dev.thestaticvoid.stcm.client.compat.journeymap.STCMJMPlugin;
@@ -198,8 +199,7 @@ public class ProspectorPick extends Item {
             int longestDepositNameLength = oreNameMap.keySet().stream().map(String::length).max(Comparator.comparingInt(a -> a)).orElse(0);
             depositsByDistance.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getKey)).forEachOrdered(entry -> {
                 String depositDisplay = String.format("%1$-" + longestDepositNameLength + "s ", entry.getValue());
-                // relies on the mono7 resource pack being loaded to display properly.
-                ResourceLocation monoFont = ResourceLocation.fromNamespaceAndPath("minecraft", "mono");
+                ResourceLocation monoFont = ResourceLocation.fromNamespaceAndPath(STCM.ID, "mono");
                 player.sendSystemMessage(Component.translatable("chat.stcm.prospector_deposit_info",
                         Component.literal(depositDisplay).withStyle(style -> style.withColor(ChatFormatting.AQUA).withFont(monoFont)),
                         Component.literal(entry.getKey().toString()).withStyle(ChatFormatting.YELLOW)));

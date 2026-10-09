@@ -9,3 +9,9 @@ Minecraft 1.21.1 NeoForge mod that adds special features for the StaTech Industr
 - Adds functionality for Nukes from Modern Industrialization to explode.
 - Adds a Prospector Pick for finding the custom large deposits in the main modpack
 - Prevents Spectrum Ruin from being placed in world
+
+## Credits
+
+| Purpose         | Source                                                     | File Locations                                                                                              |
+|-----------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Monospaced font | [mono7 by xllifi](https://modrinth.com/resourcepack/mono7) | `src/main/resources/assets/stcm/font/mono.json`<br/>`src/main/resources/assets/stcm/textures/font/mono/...` |
