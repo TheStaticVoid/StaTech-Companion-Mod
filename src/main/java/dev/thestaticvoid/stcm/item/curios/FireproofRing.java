@@ -34,9 +34,9 @@ public class FireproofRing extends STCMCurioItem {
 
     @Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag type) {
-		tooltip.add(Component.translatable("tooltip.stcm.fireproof_ring.line1"));
+		tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("tooltip.stcm.fireproof_ring.line1"));
         tooltip.add(Component.translatable("tooltip.stcm.fireproof_ring.line2"));
-        tooltip.add(Component.translatable("tooltip.stcm.fireproof_ring.line3"));
 		super.appendHoverText(stack, context, tooltip, type);
 	}
 }

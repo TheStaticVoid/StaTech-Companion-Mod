@@ -18,9 +18,8 @@
   "item.stcm.fireproof_ring": "Fireproof Ring",
   "item.stcm.prospector_pick": "Prospector Pick",
   "itemGroup.stcm": "StaTech Companion Mod",
-  "tooltip.stcm.fireproof_ring.line1": "",
-  "tooltip.stcm.fireproof_ring.line2": "§6When worn as ring:",
-  "tooltip.stcm.fireproof_ring.line3": "§9Provides a Fire Resistance effect",
+  "tooltip.stcm.fireproof_ring.line1": "§6When worn as ring:",
+  "tooltip.stcm.fireproof_ring.line2": "§9Provides a Fire Resistance effect",
   "tooltip.stcm.prospector_tooltip": "§7Hold [Shift] for more details",
   "tooltip.stcm.prospector_tooltip_shift": "§eScans in a %1$s§ex%1$s§ex%2$s §earea around where you right-click to find ore deposits.\n\n§eRight-clicking on a surface sample will add a Journey Map waypoint\n§eCrouching while right-clicking will toggle the in-world beacon for the waypoint\n\n§eShift right-click the air to change the distance checking mode"
 }
