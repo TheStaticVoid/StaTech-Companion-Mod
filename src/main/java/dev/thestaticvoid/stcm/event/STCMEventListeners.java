@@ -1,21 +1,32 @@
 package dev.thestaticvoid.stcm.event;
 
+import java.util.Optional;
 import aztech.modern_industrialization.MIBlock;
 import dev.thestaticvoid.stcm.STCM;
 import dev.thestaticvoid.stcm.entity.PrimedNuke;
+import dev.thestaticvoid.stcm.item.*;
+import dev.thestaticvoid.stcm.item.curios.FireproofRing;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.*;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.UseItemOnBlockEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import top.theillusivec4.curios.api.*;
+import top.theillusivec4.curios.api.type.capability.*;
 
 @EventBusSubscriber(modid = STCM.ID)
-public class UseItemOnBlockHandler {
+public class STCMEventListeners {
 
     @SubscribeEvent
     public static void onPlayerUseItem(UseItemOnBlockEvent event) {
@@ -36,6 +47,26 @@ public class UseItemOnBlockHandler {
                     event.cancelWithResult(ItemInteractionResult.CONSUME);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    private static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+		DamageSource source = event.getSource();
+		
+		// If the player is damaged by fire / lava and wears an fireproof ring:
+		// prevent damage and grant fire resistance
+		if (source.is(DamageTypeTags.IS_FIRE)) {
+			Optional<ItemStack> fireproofRingStack = FireproofRing.getFirstEquipped(entity, STCMItem.FIREPROOF_RING.get());
+			if (fireproofRingStack.isPresent()) {
+				if (source.is(DamageTypes.LAVA)) {
+					FireproofRing.grantFireResistance(fireproofRingStack.get(), entity);
+					event.setCanceled(true);
+				} else {
+					event.setCanceled(true);
+				}
+			}
         }
     }
 }

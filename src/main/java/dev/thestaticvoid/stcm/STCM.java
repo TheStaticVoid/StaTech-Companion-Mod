@@ -1,6 +1,9 @@
 package dev.thestaticvoid.stcm;
 
+import org.slf4j.Logger;
+
 import com.mojang.logging.LogUtils;
+
 import dev.thestaticvoid.stcm.block.STCMBlock;
 import dev.thestaticvoid.stcm.block.entity.STCMBlockEntity;
 import dev.thestaticvoid.stcm.entity.STCMEntity;
@@ -16,7 +19,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import org.slf4j.Logger;
 
 @Mod(STCM.ID)
 public class STCM {

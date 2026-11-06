@@ -17,6 +17,8 @@ public class STCMCreativeModeTabs {
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(STCMItem.PROSPECTOR_PICK.get()))
                     .title(Component.translatable("itemGroup.stcm"))
                     .displayItems(((itemDisplayParameters, output) -> {
+                        output.accept(STCMItem.ANGEL_RING);
+                        output.accept(STCMItem.FIREPROOF_RING);
                         output.accept(STCMItem.PROSPECTOR_PICK);
                         output.accept(STCMBlock.NEOFORGE_HAMMER);
                     })).build());
