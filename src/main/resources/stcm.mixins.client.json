@@ -2,7 +2,9 @@
   "required": false,
   "package": "dev.thestaticvoid.stcm.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "CreateContinousOOBColliderMixin"
+  ],
   "client": [
     "WatutParticleEngineMixin"
   ]

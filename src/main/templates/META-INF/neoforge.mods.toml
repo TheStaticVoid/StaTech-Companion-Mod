@@ -67,3 +67,10 @@ type = "optional"
 versionRange = "${watut_version_range}"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "create"
+type = "required"
+versionRange = "${create_version_range}"
+ordering = "AFTER"
+side = "BOTH"
